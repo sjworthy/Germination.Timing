@@ -19,6 +19,7 @@ library(ggbiplot)
 library(ggrepel)
 library(nationalparkcolors)
 library(lmerTest)
+library(boot)
 
 #### Figure 1A: Map ####
 
@@ -499,66 +500,120 @@ caco.df=caco.df %>%
 
 cain3.df=cain3.germ.proport[,c(1,46)]
 colnames(cain3.df)[2]="mean.temp"
+cain3.test = predict(cain3.mod.glm.cohort, re.form = NA,
+                    new.data = seq(min(cain3.df$mean.temp), max(cain3.df$mean.temp), length.out = 50),
+                    type = "link", se.fit = TRUE)
+cain3.df$logitproport = cain3.test$fit
+cain3.df$logit.se = cain3.test$se.fit
 cain3.df=cain3.df %>%
   mutate(Pop="CAIN3")%>%
-  mutate(logitproport = predict(cain3.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 cain4.df=germ.proport.temp.block[,c(1,47)]
 colnames(cain4.df)[2]="mean.temp"
+cain4.test = predict(cain4.mod.glm.cohort, re.form = NA,
+                     new.data = seq(min(cain4.df$mean.temp), max(cain4.df$mean.temp), length.out = 50),
+                     type = "link", se.fit = TRUE)
+cain4.df$logitproport = cain4.test$fit
+cain4.df$logit.se = cain4.test$se.fit
 cain4.df=cain4.df %>%
   mutate(Pop="CAIN4")%>%
-  mutate(logitproport = predict(cain4.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 stbr.df=germ.proport.temp.block[,c(1,48)]
 colnames(stbr.df)[2]="mean.temp"
+stbr.test = predict(stbr3.mod.glm.cohort, re.form = NA,
+                    new.data = seq(min(stbr.df$mean.temp), max(stbr.df$mean.temp), length.out = 50),
+                    type = "link", se.fit = TRUE)
+stbr.df$logitproport = stbr.test$fit
+stbr.df$logit.se = stbr.test$se.fit
 stbr.df=stbr.df %>%
   mutate(Pop="STBR")%>%
-  mutate(logitproport = predict(stbr3.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 stdi.df=germ.proport.temp.block[,c(1,49)]
 colnames(stdi.df)[2]="mean.temp"
+stdi.test = predict(stdi.mod.glm.cohort, re.form = NA,
+                    new.data = seq(min(stdi.df$mean.temp), max(stdi.df$mean.temp), length.out = 50),
+                    type = "link", se.fit = TRUE)
+stdi.df$logitproport = stdi.test$fit
+stdi.df$logit.se = stdi.test$se.fit
 stdi.df=stdi.df %>%
   mutate(Pop="STDI")%>%
-  mutate(logitproport = predict(stdi.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 stdr.df=stdr2.germ.proport[,c(1,50)]
 colnames(stdr.df)[2]="mean.temp"
+stdr.test = predict(stdr2.mod.glm.cohort, re.form = NA,
+                    new.data = seq(min(stdr.df$mean.temp), max(stdr.df$mean.temp), length.out = 50),
+                    type = "link", se.fit = TRUE)
+stdr.df$logitproport = stdr.test$fit
+stdr.df$logit.se = stdr.test$se.fit
 stdr.df=stdr.df %>%
   mutate(Pop="STDR")%>%
-  mutate(logitproport = predict(stdr2.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 stgl.df=stgl1.germ.proport[,c(1,51)]
 colnames(stgl.df)[2]="mean.temp"
+stgl.test = predict(stgl1.mod.glm.cohort, re.form = NA,
+                    new.data = seq(min(stgl.df$mean.temp), max(stgl.df$mean.temp), length.out = 50),
+                    type = "link", se.fit = TRUE)
+stgl.df$logitproport = stgl.test$fit
+stgl.df$logit.se = stgl.test$se.fit
 stgl.df=stgl.df %>%
   mutate(Pop="STGL")%>%
-  mutate(logitproport = predict(stgl1.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 stin.df=germ.proport.temp.block[,c(1,52)]
 colnames(stin.df)[2]="mean.temp"
+stin.test = predict(stin.mod.glm.cohort, re.form = NA,
+                    new.data = seq(min(stin.df$mean.temp), max(stin.df$mean.temp), length.out = 50),
+                    type = "link", se.fit = TRUE)
+stin.df$logitproport = stin.test$fit
+stin.df$logit.se = stin.test$se.fit
 stin.df=stin.df %>%
   mutate(Pop="STIN")%>%
-  mutate(logitproport = predict(stin.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 stpo.df=germ.proport.temp.block[,c(1,53)]
 colnames(stpo.df)[2]="mean.temp"
+stpo.test = predict(stpo1.mod.glm.cohort, re.form = NA,
+                    new.data = seq(min(stpo.df$mean.temp), max(stpo.df$mean.temp), length.out = 50),
+                    type = "link", se.fit = TRUE)
+stpo.df$logitproport = stpo.test$fit
+stpo.df$logit.se = stpo.test$se.fit
 stpo.df=stpo.df %>%
   mutate(Pop="STPO")%>%
-  mutate(logitproport = predict(stpo1.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 stto.df=germ.proport.temp.block[,c(1,54)]
 colnames(stto.df)[2]="mean.temp"
+stto.test = predict(stto.mod.glm.cohort, re.form = NA,
+                    new.data = seq(min(stto.df$mean.temp), max(stto.df$mean.temp), length.out = 50),
+                    type = "link", se.fit = TRUE)
+stto.df$logitproport = stto.test$fit
+stto.df$logit.se = stto.test$se.fit
 stto.df=stto.df %>%
   mutate(Pop="STTO")%>%
-  mutate(logitproport = predict(stto.mod.glm.cohort, re.form=NA))%>%
-  mutate(proportion = inv.logit(logitproport))
+  mutate(proportion = inv.logit(logitproport)) %>%
+  mutate(upper = inv.logit(logitproport + logit.se)) %>%
+  mutate(lower = inv.logit(logitproport - logit.se))
 
 all.contain.cohort=list(caam.df,caan1.df,caan2.df,caco.df,cain3.df,cain4.df,stbr.df,stdi.df,stdr.df,stgl.df,stin.df,
                         stpo.df,stto.df) %>% reduce(full_join)
@@ -841,7 +896,9 @@ cain.plot=ggplot(cain.all.proport.factor.predict, aes(x=cohort.factor, y=y, grou
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 cain.plot.2=cain.plot+
-  geom_line(data=cain.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)
+  geom_line(data=cain.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)+
+  geom_line(data=cain.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=cain.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 cain.all.proport.factor.predict.2=cain.all.proport.factor.predict
 cain.all.proport.factor.predict.2$altpop=c(3,3,3,3,3,3,3,4,4,4,4,4,4,4)
@@ -884,7 +941,10 @@ stdr.plot=ggplot(stdr.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stdr.plot.2=stdr.plot+
-  geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)
+  geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)+
+  geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STBR
 stbr.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STBR")
@@ -902,7 +962,9 @@ stbr.plot=ggplot(stbr.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stbr.plot.2=stbr.plot+
-  geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)
+  geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)+
+  geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # STTO
 stto.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STTO")
@@ -921,7 +983,10 @@ stto.plot=ggplot(stto.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stto.plot.2=stto.plot+
-  geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
+  geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STDI
 stdi.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STDI")
@@ -940,7 +1005,9 @@ stdi.plot=ggplot(stdi.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stdi.plot.2=stdi.plot+
-  geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
+  geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # STPO
 stpo.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STPO")
@@ -958,7 +1025,9 @@ stpo.plot=ggplot(stpo.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stpo.plot.2=stpo.plot+
-  geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
+  geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # STIN
 stin.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STIN")
@@ -976,7 +1045,9 @@ stin.plot=ggplot(stin.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stin.plot.2=stin.plot+
-  geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
+  geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # STGL
 stgl.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STGL")
@@ -995,16 +1066,19 @@ stgl.plot=ggplot(stgl.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stgl.plot.2=stgl.plot+
-  geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
+  geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 plot_grid(stdr.plot.2,stbr.plot.2,stto.plot.2,stdi.plot.2,stpo.plot.2,caam.plot,stin.plot.2,
           stgl.plot.2,caan.plot,caco.plot,cain.plot.2,
           nrow=3, ncol=4)
 
-# ggsave("Germination.Timing/Plots/stdr.plot.pdf", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/stdr.plot.pdf", height = 10, width = 12)
 
-#ggsave("Germination.Timing/Plots/Germproport_cohort_panelbyspecies.test.2.pdf", height = 10, width = 12)
-#ggsave("Germination.Timing/Plots/Germproport_cohort_panelbyspecies.png", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/Germproport_cohort_panelbyspecies.CI.pdf", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/Germproport_cohort_panelbyspecies.CI.png", height = 10, width = 12)
 
 #### Figure 5: Germination Rate~Cohort plots ####
 
@@ -1120,32 +1194,32 @@ stto.mod=lm(germ.rate~Cohort,
 # predict values for all species to get one dataframe to use facet_wrap instead of individual plots
 
 # predict linear relationship rate~ continuous value cohort
-caam.new.data=predict(caam.mod)
-caam.2$predict=caam.new.data
-caan1.new.data=predict(caan1.mod)
-caan1.2$predict=caan1.new.data
-caan2.new.data=predict(caan2.mod)
-caan2.2$predict=caan2.new.data
-caco.new.data=predict(caco.mod)
-caco.2$predict=caco.new.data
-cain3.new.data=predict(cain3.mod)
-cain3.2$predict=cain3.new.data
-cain4.new.data=predict(cain4.mod)
-cain4.2$predict=cain4.new.data
-stbr3.new.data=predict(stbr3.mod)
-stbr3.2$predict=stbr3.new.data
-stdi.new.data=predict(stdi.mod)
-stdi.2$predict=stdi.new.data
-stdr2.new.data=predict(stdr2.mod)
-stdr2.2$predict=stdr2.new.data
-stgl1.new.data=predict(stgl1.mod)
-stgl1.2$predict=stgl1.new.data
-stin.new.data=predict(stin.mod)
-stin.2$predict=stin.new.data
-stpo1.new.data=predict(stpo1.mod)
-stpo1.2$predict=stpo1.new.data
-stto.new.data=predict(stto.mod)
-stto.2$predict=stto.new.data
+caam.new.data=predict(caam.mod, interval = "confidence")
+caam.2 = cbind(caam.2, caam.new.data)
+caan1.new.data=predict(caan1.mod, interval = "confidence")
+caan1.2 = cbind(caan1.2, caan1.new.data)
+caan2.new.data=predict(caan2.mod, interval = "confidence")
+caan2.2 = cbind(caan2.2, caan2.new.data)
+caco.new.data=predict(caco.mod, interval = "confidence")
+caco.2 = cbind(caco.2, caco.new.data)
+cain3.new.data=predict(cain3.mod, interval = "confidence")
+cain3.2 = cbind(cain3.2, cain3.new.data)
+cain4.new.data=predict(cain4.mod, interval = "confidence")
+cain4.2 = cbind(cain4.2, cain4.new.data)
+stbr3.new.data=predict(stbr3.mod, interval = "confidence")
+stbr3.2 = cbind(stbr3.2, stbr3.new.data)
+stdi.new.data=predict(stdi.mod, interval = "confidence")
+stdi.2 = cbind(stdi.2, stdi.new.data)
+stdr2.new.data=predict(stdr2.mod, interval = "confidence")
+stdr2.2 = cbind(stdr2.2, stdr2.new.data)
+stgl1.new.data=predict(stgl1.mod, interval = "confidence")
+stgl1.2 = cbind(stgl1.2, stgl1.new.data)
+stin.new.data=predict(stin.mod, interval = "confidence")
+stin.2 = cbind(stin.2, stin.new.data)
+stpo1.new.data=predict(stpo1.mod, interval = "confidence")
+stpo1.2 = cbind(stpo1.2, stpo1.new.data)
+stto.new.data=predict(stto.mod, interval = "confidence")
+stto.2 = cbind(stto.2, stto.new.data)
 
 all.contin.data=list(caam.2,caan1.2,caan2.2,caco.2,cain3.2,cain4.2,stbr3.2,stdi.2,stdr2.2,stgl1.2,stin.2,stpo1.2,stto.2) %>% reduce(full_join)
 
@@ -1216,7 +1290,7 @@ rate.cohort.plots=ggplot(all.cohort.factor.predict, aes(x=cohort.factor, y=germ.
   scale_x_discrete(breaks = c(2,4,7), labels = c("2-Oct","30-Oct","11-Dec"))
 
 rate.cohort.plots.2=rate.cohort.plots+
-  geom_line(data=all.contin.data, aes(x=Cohort,y=predict, group=altpop, linetype=altpop), show.legend = FALSE)
+  geom_line(data=all.contin.data, aes(x=Cohort,y=fit, group=altpop, linetype=altpop), show.legend = FALSE)
 
 # Making each plot individually
 # CAAM
@@ -1235,7 +1309,10 @@ caam.plot=ggplot(caam.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 caam.plot.2=caam.plot+
-  geom_line(data=caam.all.contin.data, aes(x=Cohort,y=predict), show.legend = FALSE)
+  geom_line(data=caam.all.contin.data, aes(x=Cohort,y=fit), show.legend = FALSE)+
+  geom_line(data=caam.all.contin.data, aes(x=Cohort,y=lwr), color = "gray74",show.legend = FALSE)+
+  geom_line(data=caam.all.contin.data, aes(x=Cohort,y=upr), color = "gray74",show.legend = FALSE)
+  
 
 # CAAN
 caan.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Species=="CAAN")
@@ -1253,7 +1330,9 @@ caan.plot=ggplot(caan.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 caan.plot.2=caan.plot+
-  geom_line(data=caan.all.contin.data, aes(x=Cohort,y=predict,group=altpop, linetype=altpop), show.legend = FALSE)
+  geom_line(data=caan.all.contin.data, aes(x=Cohort,y=fit,group=altpop, linetype=altpop), show.legend = FALSE)+
+  geom_line(data=caan.all.contin.data, aes(x=Cohort,y=lwr,group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=caan.all.contin.data, aes(x=Cohort,y=upr,group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # CACO
 caco.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Pop=="CACO")
@@ -1277,7 +1356,10 @@ caco.plot=ggplot(caco.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 caco.plot.2=caco.plot+
-  geom_line(data=caco.all.contin.data, aes(x=Cohort,y=predict), show.legend = FALSE)
+  geom_line(data=caco.all.contin.data, aes(x=Cohort,y=fit), show.legend = FALSE)+
+  geom_line(data=caco.all.contin.data, aes(x=Cohort,y=lwr), color = "gray74",show.legend = FALSE)+
+  geom_line(data=caco.all.contin.data, aes(x=Cohort,y=upr), color = "gray74",show.legend = FALSE)
+
 
 # CAIN
 cain.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Species=="CAIN")
@@ -1300,7 +1382,10 @@ cain.plot=ggplot(cain.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 cain.plot.2=cain.plot+
-  geom_line(data=cain.all.contin.data, aes(x=Cohort,y=predict, group=altpop, linetype=altpop), show.legend = FALSE)
+  geom_line(data=cain.all.contin.data, aes(x=Cohort,y=fit, group=altpop, linetype=altpop), show.legend = FALSE)+
+  geom_line(data=cain.all.contin.data, aes(x=Cohort,y=lwr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=cain.all.contin.data, aes(x=Cohort,y=upr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STDR
 stdr.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Pop=="STDR")
@@ -1318,7 +1403,10 @@ stdr.plot=ggplot(stdr.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stdr.plot.2=stdr.plot+
-  geom_line(data=stdr.all.contin.data, aes(x=Cohort,y=predict, group=altpop, linetype=altpop), show.legend = FALSE)
+  geom_line(data=stdr.all.contin.data, aes(x=Cohort,y=fit, group=altpop, linetype=altpop), show.legend = FALSE)+
+  geom_line(data=stdr.all.contin.data, aes(x=Cohort,y=lwr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stdr.all.contin.data, aes(x=Cohort,y=upr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STBR
 stbr.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Pop=="STBR")
@@ -1336,7 +1424,10 @@ stbr.plot=ggplot(stbr.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stbr.plot.2=stbr.plot+
-  geom_line(data=stbr.all.contin.data, aes(x=Cohort,y=predict, group=altpop, linetype=altpop), show.legend = FALSE)
+  geom_line(data=stbr.all.contin.data, aes(x=Cohort,y=fit, group=altpop, linetype=altpop), show.legend = FALSE)+
+  geom_line(data=stbr.all.contin.data, aes(x=Cohort,y=lwr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stbr.all.contin.data, aes(x=Cohort,y=upr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STTO
 stto.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Pop=="STTO")
@@ -1355,7 +1446,10 @@ stto.plot=ggplot(stto.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stto.plot.2=stto.plot+
-  geom_line(data=stto.all.contin.data, aes(x=Cohort,y=predict, color="black"), show.legend = FALSE)
+  geom_line(data=stto.all.contin.data, aes(x=Cohort,y=fit, color="black"), show.legend = FALSE)+
+  geom_line(data=stto.all.contin.data, aes(x=Cohort,y=lwr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stto.all.contin.data, aes(x=Cohort,y=upr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STDI
 stdi.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Pop=="STDI")
@@ -1374,7 +1468,10 @@ stdi.plot=ggplot(stdi.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stdi.plot.2=stdi.plot+
-  geom_line(data=stdi.all.contin.data, aes(x=Cohort,y=predict, color="black"), show.legend = FALSE)
+  geom_line(data=stdi.all.contin.data, aes(x=Cohort,y=fit, color="black"), show.legend = FALSE)+
+  geom_line(data=stdi.all.contin.data, aes(x=Cohort,y=lwr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stdi.all.contin.data, aes(x=Cohort,y=upr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STPO
 stpo.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Pop=="STPO")
@@ -1393,7 +1490,10 @@ stpo.plot=ggplot(stpo.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stpo.plot.2=stpo.plot+
-  geom_line(data=stpo.all.contin.data, aes(x=Cohort,y=predict, color="black"), show.legend = FALSE)
+  geom_line(data=stpo.all.contin.data, aes(x=Cohort,y=fit, color="black"), show.legend = FALSE)+
+  geom_line(data=stpo.all.contin.data, aes(x=Cohort,y=lwr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stpo.all.contin.data, aes(x=Cohort,y=upr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STIN
 stin.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Pop=="STIN")
@@ -1412,7 +1512,10 @@ stin.plot=ggplot(stin.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stin.plot.2=stin.plot+
-  geom_line(data=stin.all.contin.data, aes(x=Cohort,y=predict, color="black"), show.legend = FALSE)
+  geom_line(data=stin.all.contin.data, aes(x=Cohort,y=fit, color="black"), show.legend = FALSE)+
+  geom_line(data=stin.all.contin.data, aes(x=Cohort,y=lwr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stin.all.contin.data, aes(x=Cohort,y=upr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 # STGL
 stgl.all.cohort.factor.predict=subset(all.cohort.factor.predict, all.cohort.factor.predict$Pop=="STGL")
@@ -1430,15 +1533,18 @@ stgl.plot=ggplot(stgl.all.cohort.factor.predict, aes(x=cohort.factor, y=germ.rat
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stgl.plot.2=stgl.plot+
-  geom_line(data=stgl.all.contin.data, aes(x=Cohort,y=predict, color="black"), show.legend = FALSE)
+  geom_line(data=stgl.all.contin.data, aes(x=Cohort,y=fit, color="black"), show.legend = FALSE)+
+  geom_line(data=stgl.all.contin.data, aes(x=Cohort,y=lwr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  geom_line(data=stgl.all.contin.data, aes(x=Cohort,y=upr, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+
 
 
 plot_grid(stdr.plot.2,stbr.plot.2,stto.plot.2,stdi.plot.2,stpo.plot.2,caam.plot.2,stin.plot.2,
           stgl.plot.2,caan.plot.2,caco.plot.2,cain.plot.2,
           nrow=3, ncol=4)
 
-#ggsave("Germination.Timing/Plots/Germrate_cohort_panelbyspecies.pdf", height = 10, width = 12)
-#ggsave("Germination.Timing/Plots/Germrate_cohort_panelbyspecies.png", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/Germrate_cohort_panelbyspecies.CI.pdf", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/Germrate_cohort_panelbyspecies.CI.png", height = 10, width = 12)
 
 # make individual effects plots if need be
 # https://cran.r-project.org/web/packages/jtools/vignettes/effect_plot.html
