@@ -165,7 +165,7 @@ seasonalbiplot = ggbiplot(pc.seasonal.2a,  varname.adjust = 1.1) +
   labs(x = paste0("Standardized PC1\n (", round(pcvarexplained$var_explained[1]*100,1), "% explained var.)"), 
       y = paste0("Standardized PC2\n (", round(pcvarexplained$var_explained[2]*100,1), "% explained var.)") #,
      # color = "Genus" #add back for colored points
-     ) + xlim(-2,2) + ylim(-1.1,2.2)+
+     ) + xlim(-2,2) + ylim(-1.1,2.3)+
  annotation_custom(text_x_high,xmin=1.8,xmax=2,ymin=-1.6,ymax=-1.6) + #here I just fiddled with coordinates to get titles where we want them
   annotation_custom(text_x_low,xmin=-2,xmax=-1.9,ymin=-1.6,ymax=-1.6) + 
   annotation_custom(text_y_high,xmin=-2.5,xmax=-2.5,ymin=1.8,ymax=2) + 
@@ -1582,6 +1582,7 @@ Pops = unique(global.germ.proport.temp.block$Pop)
 Temp = seq(min(global.germ.proport.temp.block$mean.temp, na.rm=T), max(global.germ.proport.temp.block$mean.temp, na.rm=T), length=100)
 altpop = unique(global.germ.proport.temp.block$altpop)
 Species = unique(global.germ.proport.temp.block$Species)
+Block = unique(global.germ.proport.temp.block$Block)
 
 proportpred = expand_grid(mean.temp =  Temp, Pop = Pops) %>%
   mutate(logitproport =  predict(global.germ.proport.mod, ., re.form = NA)) %>% #re.form should predict at higher level (not subject), similar to old level = 0 call
@@ -1613,7 +1614,7 @@ proportpred.2 = proportpred %>%
 germproport_wpred = germproport_bin + geom_line(data = proportpred.2,aes(x= mean.temp, y = proportion, group = altpop, 
                                                                        linetype = altpop), size=1, show.legend = FALSE) #+
 germproport_wpred
- 
+
 #ggsave("Germination.Timing/Plots/Germproport_meantemp_panelbyspecies.test.2.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/Germproport_meantemp_panelbyspecies.png", height = 10, width = 12)
 
