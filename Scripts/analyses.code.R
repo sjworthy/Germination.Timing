@@ -957,4 +957,3 @@ cohort.chisq$residuals
 # 11 of 13 species have negative association between cohort 7 and Year 1, all except STPO and STTO
 
 cohort.posthoc=chisq.posthoc.test(cohort.table) # bonferroni corrected p values
-

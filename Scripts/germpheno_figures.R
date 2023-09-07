@@ -236,7 +236,7 @@ ggplot(ibutton.mean, aes(x=Date.Time, y=mean.temp)) +
 # subset the temperature data to only go as high as the last date any seed germinated (1/25/2021)
 ibutton.mean.2=ibutton.mean[c(1:131),]
 
-ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
+Fig2=ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
   geom_line()+
   geom_ribbon(aes(ymin=mean.temp-sd.temp, ymax=mean.temp+sd.temp), alpha=0.2)+
   xlab("Date")+
@@ -413,7 +413,12 @@ fig3_draft = plot_grid(fig3a,fig3b, labels = c("A.", "B."), rel_widths = c(0.9, 
 fig3_draft
 # ggsave("Germination.Timing/Plots/fig3.2.pdf", height = 8, width = 12)
 
-#ggsave("Germination.Timing/Plots/germproport.rounds.separate.pops.pdf", height = 10, width = 12)
+fig3_new = plot_grid(Fig2,fig3b, labels = c("A.", "B."),ncol = 2)
+fig3_new
+
+# ggsave("Germination.Timing/Plots/fig3_new.pdf", height = 8, width = 12)
+
+# ggsave("Germination.Timing/Plots/germproport.rounds.separate.pops.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/germproport.rounds.separate.pops.png", height = 10, width = 12)
 
 #### Figure 4: Germination Fraction~Cohort plots ####

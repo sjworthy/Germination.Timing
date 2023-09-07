@@ -110,6 +110,9 @@ all_locs_pc[c(1803:1815),10] = c("c_amplexicaulis","c_anceps","c_anceps",
                                  "s_insignis","s_polygaloides",
                                  "s_tortuosus")
 
+range(all_locs_pc$PC1) # -3 to 7
+range(all_locs_pc$PC2) # -2 to 6
+
 caam = subset(all_locs_pc, all_locs_pc$folder == "c_amplexicaulis")
 caan = subset(all_locs_pc, all_locs_pc$folder == "c_anceps")
 caco = subset(all_locs_pc, all_locs_pc$folder == "c_coulteri")
@@ -129,8 +132,8 @@ caam.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("CAAM")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 caan.monthly.climate = ggplot() +
@@ -140,8 +143,8 @@ caan.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("CAAN")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 caco.monthly.climate = ggplot() +
@@ -151,8 +154,8 @@ caco.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("CACO")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 cain.monthly.climate = ggplot() +
@@ -162,8 +165,8 @@ cain.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("CAIN")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 stbr.monthly.climate = ggplot() +
@@ -173,8 +176,8 @@ stbr.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("STBR")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 stdi.monthly.climate = ggplot() +
@@ -184,8 +187,8 @@ stdi.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("STDI")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 stdr.monthly.climate = ggplot() +
@@ -195,8 +198,8 @@ stdr.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("STDR")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 stgl.monthly.climate = ggplot() +
@@ -206,8 +209,8 @@ stgl.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("STGL")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 stin.monthly.climate = ggplot() +
@@ -217,8 +220,8 @@ stin.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("STIN")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 stpo.monthly.climate = ggplot() +
@@ -228,8 +231,8 @@ stpo.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("STPO")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
+  xlim(-2,7)+
+  ylim(-2,7)+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 stto.monthly.climate = ggplot() +
@@ -240,14 +243,15 @@ stto.monthly.climate = ggplot() +
   labs(x = paste0("Standardized PC1"), 
        y = paste0("Standardized PC2"))+
   ggtitle("STTO")+
-  xlim(-3.5,7)+
-  ylim(-2.5,6)+
-  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  xlim(-2,7)+
+  ylim(-2,7)+
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = "none")
 
 germ.pheno.climate.plots = plot_grid(caam.monthly.climate,caan.monthly.climate,caco.monthly.climate,
                                     cain.monthly.climate,stbr.monthly.climate,stdi.monthly.climate,
                                     stdr.monthly.climate,stgl.monthly.climate,stin.monthly.climate,
                                     stpo.monthly.climate,stto.monthly.climate)
 
-# ggsave("Germination.Timing/Plots/germ.pheno.climate.plots.legend.pdf", height = 10, width = 12)
-# ggsave("Germination.Timing/Plots/germ.pheno.climate.plots.png", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/germ.pheno.climate.plots.no.legend.pdf", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/germ.pheno.climate.plots.png", height = 10, width = 12)
