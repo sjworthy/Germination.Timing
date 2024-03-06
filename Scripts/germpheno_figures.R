@@ -20,6 +20,7 @@ library(ggrepel)
 library(nationalparkcolors)
 library(lmerTest)
 library(boot)
+library(weathermetrics)
 
 #### Figure 1A: Map ####
 
@@ -219,6 +220,10 @@ ibutton.mean=ibuttondat %>%
   dplyr::summarise(mean.temp=mean(temp),
             sd.temp=sd(temp))
 
+mean(ibutton.mean$mean.temp) # 14.79415
+# october 2 temp: 21.33333
+# october 30 temp: 13.69271
+
 ggplot(ibutton.mean, aes(x=Date.Time, y=mean.temp)) +
   geom_line()+
   geom_ribbon(aes(ymin=mean.temp-sd.temp, ymax=mean.temp+sd.temp), alpha=0.2)+
@@ -403,8 +408,8 @@ cohort.proportion.data.2 = cohort.proportion.data %>%
 fig3b=ggplot(cohort.proportion.data.2, aes(fill=Year, y=Germination.Proportion, x=factor(Cohort))) + 
   geom_bar(position=position_stack(reverse = TRUE), stat="identity")+
   theme_classic(base_size = 15)+scale_fill_manual(values = c(16,1))+
-  facet_wrap(.~Pop, ncol=5)+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),legend.position="none")+
+  facet_wrap(.~phy_order, ncol=4)+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))+
   labs(x="Rainfall Onset Date", y="Germination Fraction")
 fig3b
@@ -1879,3 +1884,76 @@ dotTree(tree.2,slopes.2[,c(3:4)], colors="black")
 dotTree(tree.2,slopes.2[,c(5:6)], legend = TRUE, colors="black")
 # export as pdf device size 5 x 5
 # change the legend manually for positive and negative
+
+#### historical and contemporary temps ####
+# do 1991 - 2015 because 2016 only has up until month 9 (25 years of values)
+flint.data.mothly = read.csv("~/Library/CloudStorage/Box-Box/StreptanthusDimensions/FlintBCM/HTG_climate_data.csv") %>% 
+  filter(id %in% c("CAAM","CAAN1","CAAN2","CACO1","CAIN3","CAIN4","STBR3", "STDI","STDR2",
+                   "STGL1","STIN","STPO1","STTO-BH")) %>%
+  mutate(tmean=(tmin+tmax)/2) %>%
+  filter(clim_year != 2016) %>%
+  group_by(id, clim_year, clim_month) %>%
+  dplyr::summarize(Tmin = mean(tmin), Tmax = mean(tmax),Tmean=mean(tmean)) %>%
+  mutate(genus = "S") %>%
+  mutate(genus= ifelse(id %in% c("CAAM","CAAN1","CAAN2","CACO1","CAIN3","CAIN4"), "C", genus))
+
+ggplot(flint.data.mothly, aes(x = clim_month, y = Tmean, color = as.factor(clim_year))) +
+  geom_line()+
+  facet_wrap(~id)
+
+flint.data.contemporary = flint.data.mothly %>%
+  group_by(id) %>%
+  filter(clim_year > 1965) %>%
+  dplyr::summarise(historical.tmean = mean(Tmean))
+  
+flint.data.historical = flint.data.mothly %>%
+  group_by(id) %>%
+  filter(clim_year < 1966) %>%
+  filter(clim_year > 1914) %>%
+  dplyr::summarise(historical.tmean = mean(Tmean))
+
+#### average temp on Oct 2 and Oct 30 ####
+
+# compile the daily PRISM data
+
+# Make a list of all .csv files in prism directory
+files <- dir("./Germination.Timing/PRISM.daily/",
+             pattern="PRISM_tmean.*csv",
+             full.names=TRUE)
+files
+
+# Create a tibble to hold the imported data
+
+dat <- tibble(path=files, filename=basename(path))
+dat
+
+# import the data
+dat.2 <- dat %>%
+  mutate(sheets=purrr::map(path, 
+                           read_csv, skip = 10)) %>%
+  dplyr::select(-path)
+
+# combine the data
+
+dat.3 <- dat.2 %>% unnest(sheets) %>%
+  dplyr::select(-filename)
+
+colnames(dat.3)[2] = "tmean_F"
+
+# convert F to C
+
+dat.3$tmean_C = fahrenheit.to.celsius(dat.3$tmean_F, round = 2)
+
+dat.4 = dat.3 %>% 
+  separate(Date, into = c("Year", "Month", "Day"), sep = "-")
+
+Oct.2 = dat.4 %>%
+  filter(Day == "02") %>%
+  dplyr::summarise(oct.2.tmean = mean(tmean_C))
+Oct.2
+
+Oct.30 = dat.4 %>%
+  filter(Day == "30") %>%
+  dplyr::summarise(oct.30.tmean = mean(tmean_C))
+Oct.30 
+
