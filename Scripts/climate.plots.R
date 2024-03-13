@@ -248,10 +248,13 @@ stto.monthly.climate = ggplot() +
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.position = "none")
 
-germ.pheno.climate.plots = plot_grid(caam.monthly.climate,caan.monthly.climate,caco.monthly.climate,
-                                    cain.monthly.climate,stbr.monthly.climate,stdi.monthly.climate,
-                                    stdr.monthly.climate,stgl.monthly.climate,stin.monthly.climate,
-                                    stpo.monthly.climate,stto.monthly.climate)
+germ.pheno.climate.plots = plot_grid(stdr.monthly.climate,stbr.monthly.climate,
+                                     stto.monthly.climate,stdi.monthly.climate,
+                                     stpo.monthly.climate,caam.monthly.climate,
+                                     stin.monthly.climate,stgl.monthly.climate,
+                                     caan.monthly.climate,caco.monthly.climate,
+                                     cain.monthly.climate)
+  
 
 #ggsave("Germination.Timing/Plots/germ.pheno.climate.plots.no.legend.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/germ.pheno.climate.plots.png", height = 10, width = 12)

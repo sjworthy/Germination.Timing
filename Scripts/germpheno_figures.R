@@ -21,6 +21,7 @@ library(nationalparkcolors)
 library(lmerTest)
 library(boot)
 library(weathermetrics)
+library(gridExtra)
 
 #### Figure 1A: Map ####
 
@@ -245,7 +246,8 @@ Fig2=ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
   geom_line()+
   geom_ribbon(aes(ymin=mean.temp-sd.temp, ymax=mean.temp+sd.temp), alpha=0.2)+
   xlab("Date")+
-  ylab("Mean Daily Temperature  (°C)")+
+  ylab("Mean Daily Temperature  (°C)\n Year One")+
+  ylim(0,35)+
   theme_classic(base_size = 15)+
   geom_vline(xintercept=as.numeric(ibutton.mean[1,1]), linetype="dashed", color="#5495CF",linewidth=1)+ # 9/17/2020
   geom_vline(xintercept=as.numeric(ibutton.mean[16,1]), linetype="dashed", color="#847CA3",linewidth=1)+ # 10/2/2020
@@ -256,9 +258,37 @@ Fig2=ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
   geom_vline(xintercept=as.numeric(ibutton.mean[86,1]), linetype="dashed", color="#359F8B",linewidth=1)+ # 12/11/2020
   geom_vline(xintercept=as.numeric(ibutton.mean[15,1]), color="black",linewidth=1)+ # 10/1/2020 (historical)
   geom_vline(xintercept=as.numeric(ibutton.mean[42,1]), color="gray",linewidth=1) # 10/28/2020 (contemporary)
+Fig2
 
 #ggsave("Germination.Timing/Plots/cohort.timing.and.temps.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/cohort.timing.and.temps.png", height = 10, width = 12)
+
+# adding year 2 ibutton data to plot
+
+ibutton.y2 = read.csv("Germination.Timing/Formatted.Data/ibutton_round_2.csv")
+
+ibutton.y2.2 = ibutton.y2 %>%
+  mutate(Date = as.Date(Date, "%m/%d/%y"))
+
+ibutton.y2.mean=ibutton.y2.2 %>%
+  group_by(Date) %>%
+  dplyr::summarise(mean.temp=mean(temp),
+                   sd.temp=sd(temp))
+
+# rain event on Sept 15, 2021
+# last day Dec 27, 2021
+
+ibutton.y2.mean.2 = ibutton.y2.mean[c(34:148),]
+
+Fig2.1=ggplot(ibutton.y2.mean.2, aes(x=Date, y=mean.temp)) +
+  geom_line()+
+  geom_ribbon(aes(ymin=mean.temp-sd.temp, ymax=mean.temp+sd.temp), alpha=0.2)+
+  xlab("Date")+
+  ylab("Mean Daily Temperature  (°C)\n Year Two")+
+  theme_classic(base_size = 15)+
+  ylim(0,35)+
+  geom_vline(xintercept=as.numeric(ibutton.y2.mean.2[1,1]), linetype="dashed", color="#325731",linewidth=1) # 9/15/2020
+Fig2.1
 
 #### Figure 3A: Temperatures that seeds germinated under ####
 #density ridge plots that Jenny started
@@ -409,21 +439,24 @@ fig3b=ggplot(cohort.proportion.data.2, aes(fill=Year, y=Germination.Proportion, 
   geom_bar(position=position_stack(reverse = TRUE), stat="identity")+
   theme_classic(base_size = 15)+scale_fill_manual(values = c(16,1))+
   facet_wrap(.~phy_order, ncol=4)+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), legend.position = "none")+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))+
   labs(x="Rainfall Onset Date", y="Germination Fraction")
 fig3b
 
-fig3_draft = plot_grid(fig3a,fig3b, labels = c("A.", "B."), rel_widths = c(0.9, 1),ncol = 2)
-fig3_draft
+#ggsave("Germination.Timing/Plots/fig3b_legend.pdf", height = 8, width = 12)
+
+#fig3_draft = plot_grid(fig3a,fig3b, labels = c("A.", "B."), rel_widths = c(0.9, 1),ncol = 2)
+#fig3_draft
 # ggsave("Germination.Timing/Plots/fig3.2.pdf", height = 8, width = 12)
 
-fig3_new = plot_grid(Fig2,fig3b, labels = c("A.", "B."),ncol = 2)
-fig3_new
+fig.2.revised = grid.arrange(arrangeGrob(Fig2,Fig2.1), fig3b, ncol = 2)
+fig.2.revised
+
 
 # ggsave("Germination.Timing/Plots/fig3_new.pdf", height = 8, width = 12)
 
-# ggsave("Germination.Timing/Plots/germproport.rounds.separate.pops.pdf", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/germproport.rounds.separate.pops.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/germproport.rounds.separate.pops.png", height = 10, width = 12)
 
 #### Figure 4: Germination Fraction~Cohort plots ####
@@ -1627,6 +1660,65 @@ germproport_wpred
 
 #ggsave("Germination.Timing/Plots/Germproport_meantemp_panelbyspecies.test.2.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/Germproport_meantemp_panelbyspecies.png", height = 10, width = 12)
+
+# get proportion for each block for re-watering in year 2
+
+year.2.germ = read.csv("Germination.Timing/Formatted.Data/germ.pheno.round.2.temps.ranges.csv", row.names = 1)
+year.2.germ.2=subset(year.2.germ, year.2.germ$Population !="blank")
+
+total.germ.R2=year.2.germ.2 %>%
+  group_by(Population,Cohort,Old.Block)%>%
+  dplyr::summarise(count=sum(germinated),
+            sample=sum(planted))
+
+#write.csv(total.germ.R2, file = "./Germination.Timing/Formatted.Data/global.germ.proportion.block.round.2.csv")
+
+# gives mean of mean Temp for each block within each Cohort
+# output for each pop and add to global.germ.proportion.block.round.2.csv
+block.mean.temp=year.2.germ.2 %>%
+  filter(Population=="STTO-BH")%>%
+  group_by(Cohort,Old.Block) %>% 
+  dplyr::summarize(mean.temp= mean(mean.Temp, na.rm=TRUE))
+# write.csv(block.mean.temp, file="block.mean.temp.csv")
+
+global.germ.proport.block.R2=read.csv("Germination.timing/Formatted.Data/global.germ.proportion.block.round.2.csv", row.names = 1)
+
+global.germ.proport.block.R2$cohort.proportion = global.germ.proport.block.R2$count/global.germ.proport.block.R2$sample
+
+global.germ.proport.block.R2.4 = global.germ.proport.block.R2 %>%
+  mutate(Species = substr(Population, 1, 4)) %>%
+  mutate(altpop = 3) %>%
+  mutate(altpop= ifelse(Population %in% c("CAAN2", "CAIN4"), 4, altpop)) %>%
+  mutate(altpop = as.factor(altpop)) %>%
+  mutate(phy_order = fct_relevel(Species, "STDR", "STBR", "STTO", "STDI", "STPO", "CAAM", "STIN", 
+                                 "STGL", "CAAN", "CACO", "CAIN"))
+
+
+germproport_wpred + geom_point(data = global.germ.proport.block.R2.4,aes(x= mean.temp, y = cohort.proportion, shape = altpop, 
+                                                                         group = altpop), color = "red",show.legend = FALSE)
+
+# taking mean across all cohorts
+global.germ.proport.block.R2.2 = global.germ.proport.block.R2 %>%
+  group_by(Population,Old.Block) %>%
+  dplyr::summarise(count.2 = sum(count),
+                   sample.2 = sum(sample),
+                   mean.temp.2 = mean(mean.temp, na.rm = TRUE))
+
+global.germ.proport.block.R2.2$proportion=global.germ.proport.block.R2.2$count.2/global.germ.proport.block.R2.2$sample.2
+
+
+global.germ.proport.block.R2.3 = global.germ.proport.block.R2.2 %>%
+  mutate(Species = substr(Population, 1, 4)) %>%
+  mutate(altpop = 3) %>%
+  mutate(altpop= ifelse(Population %in% c("CAAN2", "CAIN4"), 4, altpop)) %>%
+  mutate(altpop = as.factor(altpop)) %>%
+  mutate(phy_order = fct_relevel(Species, "STDR", "STBR", "STTO", "STDI", "STPO", "CAAM", "STIN", 
+                                 "STGL", "CAAN", "CACO", "CAIN"))
+
+
+germproport_wpred + geom_point(data = global.germ.proport.block.R2.3,aes(x= mean.temp.2, y = proportion, shape = altpop, 
+                                                                         group = altpop), color = "red",show.legend = FALSE)
+
 
 #### Figure 7: Germination rate as a function of cohort and temperature ####
 
