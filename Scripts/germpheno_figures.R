@@ -222,8 +222,9 @@ ibutton.mean=ibuttondat %>%
             sd.temp=sd(temp))
 
 mean(ibutton.mean$mean.temp) # 14.79415
-# october 2 temp: 21.33333
-# october 30 temp: 13.69271
+mean(ibutton.mean$sd.temp) # 5.474449
+# october 2 temp: 21.33333, sd = 3.383889
+# october 30 temp: 13.69271, sd = 4.253652
 
 ggplot(ibutton.mean, aes(x=Date.Time, y=mean.temp)) +
   geom_line()+
@@ -275,10 +276,19 @@ ibutton.y2.mean=ibutton.y2.2 %>%
   dplyr::summarise(mean.temp=mean(temp),
                    sd.temp=sd(temp))
 
+# Oct 1 2021: 20.370833, sd = 6.3040923
+# Oct 30 2021: 16.645833, sd = 3.7238702
+
+
 # rain event on Sept 15, 2021
 # last day Dec 27, 2021
 
-ibutton.y2.mean.2 = ibutton.y2.mean[c(34:148),]
+ibutton.y2.mean.2 = ibutton.y2.mean[c(34:137),]
+
+mean(ibutton.y2.mean.2$mean.temp) # 14.07
+sd(ibutton.y2.mean.2$mean.temp) # 4.76
+
+
 
 Fig2.1=ggplot(ibutton.y2.mean.2, aes(x=Date, y=mean.temp)) +
   geom_line()+
@@ -289,6 +299,45 @@ Fig2.1=ggplot(ibutton.y2.mean.2, aes(x=Date, y=mean.temp)) +
   ylim(0,35)+
   geom_vline(xintercept=as.numeric(ibutton.y2.mean.2[1,1]), linetype="dashed", color="#325731",linewidth=1) # 9/15/2020
 Fig2.1
+
+# figure with both year 1 and year 2 temperatures
+
+ibutton.y2.mean.2$Date.2 = ibutton.y2.mean.2$Date-years(1)
+
+all.years.temps = left_join(ibutton.mean.2,ibutton.y2.mean.2, by = join_by("Date.Time"=="Date.2"))
+
+#output to organize
+
+
+#write.csv(all.years.temps, file = "./Germination.Timing/Formatted.Data/all.years.temp.csv")
+
+all.years.temps = read.csv("./Germination.Timing/Formatted.Data/all.years.temp.csv") # didn't work
+
+cols <- c("YEAR1"="black","YEAR2"= "orange")
+year1.temp = ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
+  geom_line(aes(color = "YEAR1"),linewidth=1)+
+  geom_line(data = ibutton.y2.mean.2, aes(x=Date.2, y=mean.temp, color = "YEAR2"), linewidth=1)+
+  xlab("Date")+
+  ylab("Mean Daily Temperature (°C)")+
+  ylim(0,35)+
+  theme_classic(base_size = 15)+
+  scale_colour_manual(name="Years",values=cols)
+year1.temp
+
+#ggsave("Germination.Timing/Plots/all.year.temp.fig.pdf", height = 8, width = 12)
+#ggsave("Germination.Timing/Plots/all.year.temp.fig.jpg", height = 8, width = 12)
+
+year1.temp.nolegend = ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
+  geom_line(aes(color = "YEAR1"),linewidth=1)+
+  geom_line(data = ibutton.y2.mean.2, aes(x=Date.2, y=mean.temp, color = "YEAR2"), linewidth=1)+
+  xlab("Date")+
+  ylab("Mean Daily Temperature (°C)")+
+  ylim(0,35)+
+  theme_classic(base_size = 15)+
+  scale_colour_manual(name="Years",values=cols)+
+  theme(legend.position = "None")
+year1.temp.nolegend
+
 
 #### Figure 3A: Temperatures that seeds germinated under ####
 #density ridge plots that Jenny started
@@ -367,13 +416,18 @@ cols=c("#5495CF","#847CA3", "#E45A5A", "#F4A65E", "#80792B", "#F2D56F", "#359F8B
 fig3a=ggplot(germ.pheno.all.rounds, aes(x = mean.Temp, y = as.factor(Cohort), group = as.factor(Cohort), fill = as.factor(Cohort))) + 
   ylab("Rainfall Onset Date")  + xlab("Mean temperature (°C) during germination") +
   geom_density_ridges2(aes(y = reorder(as.factor(Cohort), desc(as.factor(Cohort)))), show.legend = FALSE)+
-  scale_y_discrete(breaks=c("1","2","3","4","5","6","7","8"),labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec","15-Sept \n (Re-Water)"))+
+  scale_y_discrete(breaks=c("1","2","3","4","5","6","7","8"),labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec","15-Sept \n (Year Two)"))+
   theme_classic(base_size = 15)+
   scale_fill_manual(values = cols)
 fig3a
 
 #ggsave("Germination.Timing/Plots/temps.experienced.cohort.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/temps.experienced.cohort.png", height = 10, width = 12)
+
+FigureS2=plot_grid(year1.temp.nolegend,fig3a, labels = c("A","B"))
+
+ggsave("Germination.Timing/Plots/FigureS2.pdf", height = 10, width = 12)
+ggsave("Germination.Timing/Plots/FigureS2.png", height = 10, width = 12)
 
 #### Figure 3B: Germination Fraction for Rounds 1 and 2 #####
 # calculating germination proportion
@@ -446,12 +500,23 @@ fig3b
 
 #ggsave("Germination.Timing/Plots/fig3b_legend.pdf", height = 8, width = 12)
 
-#fig3_draft = plot_grid(fig3a,fig3b, labels = c("A.", "B."), rel_widths = c(0.9, 1),ncol = 2)
+#Fig3_draft = plot_grid(fig3a,fig3b, labels = c("A.", "B."), rel_widths = c(0.9, 1),ncol = 2)
 #fig3_draft
 # ggsave("Germination.Timing/Plots/fig3.2.pdf", height = 8, width = 12)
 
+Fig2_draft = plot_grid(Fig2,fig3b, labels = c("A.", "B."), rel_widths = c(0.9, 1),ncol = 2)
+Fig2_draft
+#ggsave("Germination.Timing/Plots/fig2.revised.pdf", height = 8, width = 12)
+#ggsave("Germination.Timing/Plots/fig2.revised.jpg", height = 8, width = 12)
+
+
 fig.2.revised = grid.arrange(arrangeGrob(Fig2,Fig2.1), fig3b, ncol = 2)
 fig.2.revised
+
+Fig2.1
+#ggsave("Germination.Timing/Plots/year2temp.pdf", height = 8, width = 12)
+#ggsave("Germination.Timing/Plots/year2temp.jpg", height = 8, width = 12)
+
 
 
 # ggsave("Germination.Timing/Plots/fig3_new.pdf", height = 8, width = 12)
@@ -1996,13 +2061,15 @@ ggplot(flint.data.mothly, aes(x = clim_month, y = Tmean, color = as.factor(clim_
 flint.data.contemporary = flint.data.mothly %>%
   group_by(id) %>%
   filter(clim_year > 1965) %>%
-  dplyr::summarise(historical.tmean = mean(Tmean))
+  dplyr::summarise(historical.tmean = mean(Tmean),
+                   historial.sd = sd(Tmean))
   
 flint.data.historical = flint.data.mothly %>%
   group_by(id) %>%
   filter(clim_year < 1966) %>%
   filter(clim_year > 1914) %>%
-  dplyr::summarise(historical.tmean = mean(Tmean))
+  dplyr::summarise(historical.tmean = mean(Tmean),
+                   historial.sd = sd(Tmean))
 
 #### average temp on Oct 2 and Oct 30 ####
 
@@ -2041,11 +2108,13 @@ dat.4 = dat.3 %>%
 
 Oct.2 = dat.4 %>%
   filter(Day == "02") %>%
-  dplyr::summarise(oct.2.tmean = mean(tmean_C))
+  dplyr::summarise(oct.2.tmean = mean(tmean_C),
+                   oct.2.sd = sd(tmean_C))
 Oct.2
 
 Oct.30 = dat.4 %>%
   filter(Day == "30") %>%
-  dplyr::summarise(oct.30.tmean = mean(tmean_C))
+  dplyr::summarise(oct.30.tmean = mean(tmean_C),
+                   oct.20.sd = sd(tmean_C))
 Oct.30 
 
