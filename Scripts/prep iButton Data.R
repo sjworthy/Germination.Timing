@@ -383,7 +383,7 @@ write.csv(ibuttonall, file = "Germination.Timing/Formatted.Data/ibutton_allcohor
 write.csv(dailytemp_coh,  file = "Germination.Timing/Formatted.Data/ibutton_dailytemps.csv", row.names = FALSE)
 
 ### formatting ibutton data for round 2 of Germination Phenology ####
-##### reading in ibutton data for each block and adding cohort and block columns ####
+# reading in ibutton data for each block and adding cohort and block columns 
 #Round 2
 #Block 4
 R2B4 = read.csv('./Germination.Timing/Raw.Data/Germ Pheno 2.0 iButton Data/Round 2 Block 04 iButton Data.csv', skip = 14)
@@ -464,9 +464,6 @@ head(R2B13.2)
 tail(R2B13.2)
 R2B13.2$block <- 13
 R2B13.2$Date.Time <- mdy_hm(R2B13.2$Date.Time) #change this because original format didn't have seconds and the rest of the files do,
-
-
-
 
 ##### joining ibutton block datasets ####
 

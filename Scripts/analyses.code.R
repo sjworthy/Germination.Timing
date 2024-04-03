@@ -11,7 +11,9 @@ library(tidyr)
 library(boot)
 library(emmeans)
 library(nlme)
-library(chisq.posthoc.test)
+library(chisq.posthoc.test) # for contingency analysis
+library(phyr) # for PGLMM
+library(rr2) # R2 from PGLMM
 
 
 #### Calculating Germination Rate ####
@@ -315,7 +317,7 @@ for(i in 1:7){
 germ.proport=as.data.frame(germ.proport)
 germ.proport.2=t(germ.proport) # transpose the dataframe
 
-write.csv(germ.proport, file="germ.proportion.csv")
+#write.csv(germ.proport, file="germ.proportion.csv")
 
 # calculating germination proportion for each block of each species/pop
 germ.proport.block=matrix(data=NA, ncol=13, nrow=21)
@@ -435,7 +437,7 @@ block=subset(cohort, cohort$Block == 3)
 germ.proport.block[21,13]=(sum(block$germinated)/sum(block$planted))
 
 germ.proport.block=as.data.frame(germ.proport.block)
-write.csv(germ.proport.block, file="germ.proportion.blocks.csv")
+#write.csv(germ.proport.block, file="germ.proportion.blocks.csv")
 
 # adding count of germination vs total seeds to germ.proportion.tempdiff.csv
 # code repeated for each species/pop
@@ -446,7 +448,7 @@ block.germ=germ.pheno  %>%
   group_by(Cohort,Block) %>% 
   summarize(germinated.block = sum(germinated))
 
-write.csv(block.plant, file="block.germ.csv")
+#write.csv(block.plant, file="block.germ.csv")
 
 # gives total number planted
 block.plant=germ.pheno%>%
@@ -473,7 +475,7 @@ germ.proport.sd <- germ.proport.block.long %>%
 germ.proport.sd
 
 germ.proport.mean.sd=merge(germ.proport.means, germ.proport.sd)
-write.csv(germ.proport.mean.sd, file="germ.proport.mean.sd.csv")
+#write.csv(germ.proport.mean.sd, file="germ.proport.mean.sd.csv")
 
 #### GLMER model of Germination Proportion~mean temperature ####
 
@@ -886,7 +888,7 @@ all.proport.data$Cohort=as.factor(all.proport.data$Cohort)
 all.proport.data$Round=as.factor(all.proport.data$Round)
 all.proport.data$Pop=as.factor(all.proport.data$Pop)
 
-write.csv(all.proport.data, file="all.proport.data.long.csv")
+# write.csv(all.proport.data, file="all.proport.data.long.csv")
 
 #### Contingency analyses ####
 
@@ -957,3 +959,249 @@ cohort.chisq$residuals
 # 11 of 13 species have negative association between cohort 7 and Year 1, all except STPO and STTO
 
 cohort.posthoc=chisq.posthoc.test(cohort.table) # bonferroni corrected p values
+
+#### PGLMM ####
+
+# read in data
+global.germ.proport.temp.block=read.csv("Germination.timing/Formatted.Data/global.germ.proportion.block.tempdiff.csv")
+global.germ.proport.temp.block$Pop=as.factor(global.germ.proport.temp.block$Pop)
+
+# phylogeny read in above
+# To specify that a random term should have phylogenetic covariance matrix along 
+# with non-phylogenetic one, add __ (two underscores) at the end of the group variable
+# if, for example, phylogenetically related species are not more likely to share the same response to env, the
+# variance of the corresponding random variable (env|sp__) is estimated as zero.
+# env|sp__ assumes species-specific slopes for the relationship are not independent of phylogeny
+
+y=cbind(global.germ.proport.temp.block$count, (global.germ.proport.temp.block$sample-global.germ.proport.temp.block$count))
+
+phylo_mod = pglmm(y ~ Cohort + (1|Species__) + (Cohort|Species__) + (1|Block),
+                  data = global.germ.proport.temp.block,
+                  cov_ranef = list(Species = tree.2),
+                  family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod)
+
+
+R2(phylo_mod)
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of Cohort corrected for phylogenetic effect
+# relationship between cohort and germination is related to phylogenetic covariance of the species
+# significant negative relationship with Cohort
+
+# test the random effect
+LRTs <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod, re.number = x))
+colnames(LRTs) <- names(phylo_mod$ss)
+t(LRTs)
+
+# sp__ and mean.temp|sp__ significant
+
+phylo_mod_temp = pglmm(y ~ mean.temp + (1|Species__) + (mean.temp|Species__) + (1|Block),
+                       data = global.germ.proport.temp.block,
+                       cov_ranef = list(Species = tree.2),
+                       family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_temp)
+
+R2(phylo_mod_temp)
+
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of mean temp corrected for phylogenetic effect
+# relationship between mean temp and germination is related to phylogenetic covariance of the species
+# significant positive relationship with mean temp
+
+# test the random effect
+LRTs.temps <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_temp, re.number = x))
+colnames(LRTs.temps) <- names(phylo_mod_temp$ss)
+t(LRTs.temps)
+
+# sp__ and mean.temp|sp__ significant
+
+# testing if having both populations inflates the analyses
+
+# caan1 and cain3
+
+global.germ.proport.temp.block.2 = global.germ.proport.temp.block[c(1:21,43:84,106:273),]
+
+y=cbind(global.germ.proport.temp.block.2$count, (global.germ.proport.temp.block.2$sample-global.germ.proport.temp.block.2$count))
+
+phylo_mod_combo1 = pglmm(y ~ Cohort + (1|Species__) + (Cohort|Species__) + (1|Block),
+                         data = global.germ.proport.temp.block.2,
+                         cov_ranef = list(Species = phylo),
+                         family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_combo1)
+
+R2(phylo_mod_combo1)
+
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of Cohort NOT corrected for phylogenetic effect
+# relationship between cohort and germination is not related to phylogenetic covariance of the species
+# significant negative relationship with Cohort
+
+# test the random effect
+LRTs <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_combo1, re.number = x))
+colnames(LRTs) <- names(phylo_mod_combo1$ss)
+t(LRTs)
+
+# sp__ significant
+
+phylo_mod_temp_combo1 = pglmm(y ~ mean.temp + (1|Species__) + (mean.temp|Species__) + (1|Block),
+                              data = global.germ.proport.temp.block.2,
+                              cov_ranef = list(Species = phylo),
+                              family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_temp_combo1)
+
+R2(phylo_mod_temp_combo1)
+
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of mean temp corrected for phylogenetic effect
+# relationship between mean temp and germination is related to phylogenetic covariance of the species
+# significant positive relationship with mean temp
+
+# test the random effect
+LRTs.temps <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_temp_combo1, re.number = x))
+colnames(LRTs.temps) <- names(phylo_mod_temp_combo1$ss)
+t(LRTs.temps)
+
+# sp__ and mean.temp|sp__ significant
+
+# caan1 and cain4
+
+global.germ.proport.temp.block.3 = global.germ.proport.temp.block[c(1:21,43:63,85:273),]
+global.germ.proport.temp.block.3[c(43:63),8] = "Caulanthus_inflatus"
+
+y=cbind(global.germ.proport.temp.block.3$count, (global.germ.proport.temp.block.3$sample-global.germ.proport.temp.block.3$count))
+
+phylo_mod_combo2 = pglmm(y ~ Cohort + (1|Species__) + (Cohort|Species__) + (1|Block),
+                         data = global.germ.proport.temp.block.3,
+                         cov_ranef = list(Species = phylo),
+                         family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_combo2)
+
+R2(phylo_mod_combo2)
+
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of Cohort NOT corrected for phylogenetic effect
+# relationship between cohort and germination is not related to phylogenetic covariance of the species
+# significant negative relationship with Cohort
+
+# test the random effect
+LRTs <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_combo2, re.number = x))
+colnames(LRTs) <- names(phylo_mod_combo2$ss)
+t(LRTs)
+
+# sp__ significant
+
+phylo_mod_temp_combo2 = pglmm(y ~ mean.temp + (1|Species__) + (mean.temp|Species__) + (1|Block),
+                              data = global.germ.proport.temp.block.3,
+                              cov_ranef = list(Species = phylo),
+                              family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_temp_combo2)
+
+R2(phylo_mod_temp_combo2)
+
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of mean temp corrected for phylogenetic effect
+# relationship between mean temp and germination is related to phylogenetic covariance of the species
+# significant positive relationship with mean temp
+
+# test the random effect
+LRTs.temps <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_temp_combo2, re.number = x))
+colnames(LRTs.temps) <- names(phylo_mod_temp_combo2$ss)
+t(LRTs.temps)
+
+# sp__ and mean.temp|sp__ significant
+
+# caan2 and cain3
+
+global.germ.proport.temp.block.4 = global.germ.proport.temp.block[c(22:84,106:273),]
+global.germ.proport.temp.block.4[c(1:21),8] = "Caulanthus_anceps"
+
+y=cbind(global.germ.proport.temp.block.4$count, (global.germ.proport.temp.block.4$sample-global.germ.proport.temp.block.4$count))
+
+phylo_mod_combo3 = pglmm(y ~ Cohort + (1|Species__) + (Cohort|Species__) + (1|Block),
+                         data = global.germ.proport.temp.block.4,
+                         cov_ranef = list(Species = phylo),
+                         family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_combo3)
+
+R2(phylo_mod_combo3)
+
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of Cohort corrected for phylogenetic effect
+# relationship between cohort and germination is related to phylogenetic covariance of the species
+# significant negative relationship with Cohort
+
+# test the random effect
+LRTs <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_combo3, re.number = x))
+colnames(LRTs) <- names(phylo_mod_combo3$ss)
+t(LRTs)
+
+# sp__ and Cohort|species__ significant
+
+phylo_mod_temp_combo3 = pglmm(y ~ mean.temp + (1|Species__) + (mean.temp|Species__) + (1|Block),
+                              data = global.germ.proport.temp.block.4,
+                              cov_ranef = list(Species = phylo),
+                              family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_temp_combo3)
+
+R2(phylo_mod_temp_combo3)
+
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of mean temp corrected for phylogenetic effect
+# relationship between mean temp and germination is related to phylogenetic covariance of the species
+# significant positive relationship with mean temp
+
+# test the random effect
+LRTs.temps <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_temp_combo3, re.number = x))
+colnames(LRTs.temps) <- names(phylo_mod_temp_combo3$ss)
+t(LRTs.temps)
+
+# sp__ and mean.temp|sp__ significant
+
+# caan2 and cain4
+
+global.germ.proport.temp.block.5 = global.germ.proport.temp.block[c(22:63,85:273),]
+global.germ.proport.temp.block.5[c(1:21),8] = "Caulanthus_anceps"
+global.germ.proport.temp.block.5[c(43:63),8] = "Caulanthus_inflatus"
+
+y=cbind(global.germ.proport.temp.block.5$count, (global.germ.proport.temp.block.5$sample-global.germ.proport.temp.block.5$count))
+
+phylo_mod_combo4 = pglmm(y ~ Cohort + (1|Species__) + (Cohort|Species__) + (1|Block),
+                         data = global.germ.proport.temp.block.5,
+                         cov_ranef = list(Species = phylo),
+                         family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_combo4)
+
+R2(phylo_mod_combo4)
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of Cohort corrected for phylogenetic effect
+# relationship between cohort and germination is related to phylogenetic covariance of the species
+# significant negative relationship with Cohort
+
+# test the random effect
+LRTs <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_combo4, re.number = x))
+colnames(LRTs) <- names(phylo_mod_combo4$ss)
+t(LRTs)
+
+# sp__ is significant
+
+phylo_mod_temp_combo4 = pglmm(y ~ mean.temp + (1|Species__) + (mean.temp|Species__) + (1|Block),
+                              data = global.germ.proport.temp.block.5,
+                              cov_ranef = list(Species = phylo),
+                              family = "binomial", verbose = T, prior = "pc.prior.auto")
+summary(phylo_mod_temp_combo4)
+
+R2(phylo_mod_temp_combo4)
+
+# strongest effect overall is a species phylogenetic effect
+# second strongest effect is the effect of mean temp corrected for phylogenetic effect
+# relationship between mean temp and germination is related to phylogenetic covariance of the species
+# significant positive relationship with mean temp
+
+# test the random effect
+LRTs.temps <- sapply(1:6, FUN = function(x) phyr::pglmm_profile_LRT(phylo_mod_temp_combo4, re.number = x))
+colnames(LRTs.temps) <- names(phylo_mod_temp_combo4$ss)
+t(LRTs.temps)
+
+# sp__ and mean.temp|sp__ significant
+
+

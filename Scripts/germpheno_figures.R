@@ -10,7 +10,7 @@ library(cowplot) #if we want to manually panel/arrange plots
 library(lubridate) #for formatting date time data (e.g. ibutton data)
 library(ape) # for phylogeny
 library(phytools) # for phylogeny and dotTree
-library(emmeans)
+library(emmeans) # for marginal means
 library(boot)
 library(jtools)
 library(ggprism)
@@ -19,7 +19,6 @@ library(ggbiplot)
 library(ggrepel)
 library(nationalparkcolors)
 library(lmerTest)
-library(boot)
 library(weathermetrics)
 library(gridExtra)
 
@@ -54,15 +53,9 @@ map
 #ggsave("Germination.Timing/Plots/map_no color.png", height = 10, width = 12)
 
 #### Figure 1B: PC biplot of climate ####
-#Get climate data for pops and species from Flint
+# Get climate data for pops and species from Flint and Flint 2014
 # data here: https://ucdavis.app.box.com/file/949830830865?s=gmpbjzprzbswqukbal1gf2e8bxtbykwg
 # subset for year 1991-2016, 25 years
-#setwd("~/Library/CloudStorage/Box-Box/StreptanthusDimensions/FlintBCM")
-#Jenny's wd
-#setwd("C:/Users/Jenny/Box/StreptanthusDimensions/FlintBCM")
-
-#actually, find data on Box in read.csv command, to keep wd in project, which facilitates saving and later scripts
-# Jenny's path for below code: C:/Users/Jenny/Box/StreptanthusDimensions/FlintBCM/HTG_climate_data.csv
 
 # do 1991 - 2015 because 2016 only has up until month 9 (25 years of values)
 flint.data.mothly = read.csv("~/Library/CloudStorage/Box-Box/StreptanthusDimensions/FlintBCM/HTG_climate_data.csv") %>% 
@@ -279,7 +272,6 @@ ibutton.y2.mean=ibutton.y2.2 %>%
 # Oct 1 2021: 20.370833, sd = 6.3040923
 # Oct 30 2021: 16.645833, sd = 3.7238702
 
-
 # rain event on Sept 15, 2021
 # last day Dec 27, 2021
 
@@ -287,8 +279,6 @@ ibutton.y2.mean.2 = ibutton.y2.mean[c(34:137),]
 
 mean(ibutton.y2.mean.2$mean.temp) # 14.07
 sd(ibutton.y2.mean.2$mean.temp) # 4.76
-
-
 
 Fig2.1=ggplot(ibutton.y2.mean.2, aes(x=Date, y=mean.temp)) +
   geom_line()+
@@ -300,7 +290,7 @@ Fig2.1=ggplot(ibutton.y2.mean.2, aes(x=Date, y=mean.temp)) +
   geom_vline(xintercept=as.numeric(ibutton.y2.mean.2[1,1]), linetype="dashed", color="#325731",linewidth=1) # 9/15/2020
 Fig2.1
 
-# figure with both year 1 and year 2 temperatures
+# figure with both year 1 and year 2 temperatures (Figure S2A)
 
 ibutton.y2.mean.2$Date.2 = ibutton.y2.mean.2$Date-years(1)
 
@@ -341,8 +331,6 @@ year1.temp.nolegend
 
 #### Figure 3A: Temperatures that seeds germinated under ####
 #density ridge plots that Jenny started
-#load data
-# germ.pheno = read_csv("./Germination.Timing/Formatted.Data/germ.pheno.temps.all.csv.gz")
 
 germ.pheno = read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1) # Sam reading in file
 summary(germ.pheno)
@@ -426,8 +414,8 @@ fig3a
 
 FigureS2=plot_grid(year1.temp.nolegend,fig3a, labels = c("A","B"))
 
-ggsave("Germination.Timing/Plots/FigureS2.pdf", height = 10, width = 12)
-ggsave("Germination.Timing/Plots/FigureS2.png", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/FigureS2.pdf", height = 10, width = 12)
+#ggsave("Germination.Timing/Plots/FigureS2.png", height = 10, width = 12)
 
 #### Figure 3B: Germination Fraction for Rounds 1 and 2 #####
 # calculating germination proportion
@@ -509,14 +497,12 @@ Fig2_draft
 #ggsave("Germination.Timing/Plots/fig2.revised.pdf", height = 8, width = 12)
 #ggsave("Germination.Timing/Plots/fig2.revised.jpg", height = 8, width = 12)
 
-
 fig.2.revised = grid.arrange(arrangeGrob(Fig2,Fig2.1), fig3b, ncol = 2)
 fig.2.revised
 
 Fig2.1
 #ggsave("Germination.Timing/Plots/year2temp.pdf", height = 8, width = 12)
 #ggsave("Germination.Timing/Plots/year2temp.jpg", height = 8, width = 12)
-
 
 
 # ggsave("Germination.Timing/Plots/fig3_new.pdf", height = 8, width = 12)
@@ -2043,7 +2029,8 @@ dotTree(tree.2,slopes.2[,c(5:6)], legend = TRUE, colors="black")
 # change the legend manually for positive and negative
 
 #### historical and contemporary temps ####
-# do 1991 - 2015 because 2016 only has up until month 9 (25 years of values)
+# do up to 2015 because 2016 only has up until month 9 (25 years of values)
+
 flint.data.mothly = read.csv("~/Library/CloudStorage/Box-Box/StreptanthusDimensions/FlintBCM/HTG_climate_data.csv") %>% 
   filter(id %in% c("CAAM","CAAN1","CAAN2","CACO1","CAIN3","CAIN4","STBR3", "STDI","STDR2",
                    "STGL1","STIN","STPO1","STTO-BH")) %>%
