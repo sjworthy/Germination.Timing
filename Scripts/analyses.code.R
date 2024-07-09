@@ -16,291 +16,6 @@ library(phyr) # for PGLMM
 library(rr2) # R2 from PGLMM
 
 
-#### Calculating Germination Rate ####
-# 1/days2germ2
-germ.pheno.all <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
-# remove blanks from germ.pheno.all
-germ.pheno=subset(germ.pheno.all, germ.pheno.all$Pop !="blank")
-
-germ.pheno[,21]=1/germ.pheno$days2germ2
-colnames(germ.pheno)[21]="germ.rate" 
-
-#### Linear model of Germination Rate~mean temperature ####
-ggplot(germ.pheno, aes(x=mean.Temp, y=germ.rate, color=as.factor(Cohort), group=Pop))+
-  geom_point()+
-  geom_smooth(method="lm",SE=FALSE)+
-  facet_wrap(~Pop)
-
-caam.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                        data=caam.2) # significant
-caan1.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                         data=caan1.2) # significant
-caan2.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                         data=caan2.2) # significant
-caco.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                        data=caco.2) # significant
-cain3.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                         data=cain3.2) # significant
-cain4.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                         data=cain4.2) # significant
-stbr3.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                         data=stbr3.2) # significant
-stdi.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                        data=stdi.2) # significant
-stdr2.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                         data=stdr2.2) # significant
-stgl1.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                         data=stgl1.2) # significant
-stin.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                        data=stin.2) # significant
-stpo1.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                         data=stpo1.2) # significant
-stto.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
-                        data=stto.2) # significant
-
-#### Global LM model with of germination rate~mean.temperature ####
-
-germ.pheno.2=germ.pheno[!is.na(germ.pheno$mean.Temp),] # remove NAs
-
-global.rate.mod=lmer(germ.rate~mean.Temp*Pop + Cohort + (1|Block), 
-                     data=germ.pheno.2)
-
-germ.rate.emm=emtrends(global.rate.mod, "Pop", var="mean.Temp")
-#write.csv(germ.rate.emm, file="germrate.meantemp.slopes.csv")
-germ.rate.emm.pairs=emtrends(global.rate.mod, pairwise~Pop, var="mean.Temp")
-#write.csv(germ.rate.emm.pairs$contrasts, file="germrate.meantemp.contrasts.csv")
-emmip(global.rate.mod, Pop ~ mean.Temp, cov.reduce = range)
-
-#### Linear model of germ rate~cohort ####
-# need to test if linear or quadratic is better fit for each species
-
-# make a separate dataframe for each species
-# remove NAs so poly() will work
-caam=germ.pheno[germ.pheno$Pop=="CAAM-GB",]
-caam.2=caam[!is.na(caam$mean.Temp),]
-caan1=germ.pheno[germ.pheno$Pop =="CAAN1",]
-caan1.2=caan1[!is.na(caan1$mean.Temp),]
-caan2=germ.pheno[germ.pheno$Pop =="CAAN2",]
-caan2.2=caan2[!is.na(caan2$mean.Temp),]
-caco=germ.pheno[germ.pheno$Pop =="CACO1",]
-caco.2=caco[!is.na(caco$mean.Temp),]
-cain3=germ.pheno[germ.pheno$Pop =="CAIN3",]
-cain3.2=cain3[!is.na(cain3$mean.Temp),]
-cain4=germ.pheno[germ.pheno$Pop =="CAIN4",]
-cain4.2=cain4[!is.na(cain4$mean.Temp),]
-stbr3=germ.pheno[germ.pheno$Pop =="STBR3",]
-stbr3.2=stbr3[!is.na(stbr3$mean.Temp),]
-stdi=germ.pheno[germ.pheno$Pop =="STDI",]
-stdi.2=stdi[!is.na(stdi$mean.Temp),]
-stdr2=germ.pheno[germ.pheno$Pop =="STDR2",]
-stdr2.2=stdr2[!is.na(stdr2$mean.Temp),]
-stgl1=germ.pheno[germ.pheno$Pop =="STGL1",]
-stgl1.2=stgl1[!is.na(stgl1$mean.Temp),]
-stin=germ.pheno[germ.pheno$Pop =="STIN",]
-stin.2=stin[!is.na(stin$mean.Temp),]
-stpo1=germ.pheno[germ.pheno$Pop =="STPO1",]
-stpo1.2=stpo1[!is.na(stpo1$mean.Temp),]
-stto=germ.pheno[germ.pheno$Pop =="STTO-BH",]
-stto.2=stto[!is.na(stto$mean.Temp),]
-
-# cohort is not treated as factor
-caam.2.mod.cohort=lm(germ.rate~Cohort,
-                     data=caam.2)
-caan1.mod.cohort=lm(germ.rate~Cohort, 
-                    data=caan1.2)
-caan2.mod.cohort=lm(germ.rate~Cohort, 
-                    data=caan2.2)
-caco.mod.cohort=lm(germ.rate~Cohort, 
-                   data=caco.2)
-cain3.mod.cohort=lm(germ.rate~Cohort, 
-                    data=cain3.2)
-cain4.mod.cohort=lm(germ.rate~Cohort, 
-                    data=cain4.2)
-stbr3.mod.cohort=lm(germ.rate~Cohort, 
-                    data=stbr3.2)
-stdi.mod.cohort=lm(germ.rate~Cohort, 
-                   data=stdi.2)
-stdr2.mod.cohort=lm(germ.rate~Cohort, 
-                    data=stdr2.2)
-stgl1.mod.cohort=lm(germ.rate~Cohort, 
-                    data=stgl1.2)
-stin.mod.cohort=lm(germ.rate~Cohort, 
-                   data=stin.2)
-stpo1.mod.cohort=lm(germ.rate~Cohort, 
-                    data=stpo1.2)
-stto.mod.cohort=lm(germ.rate~Cohort, 
-                   data=stto.2)
-
-#### Quadratic model of germ rate~cohort ####
-
-# cohort is not treated as factor
-caam.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                      data=caam.2)
-caan1.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                    data=caan1.2)
-caan2.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                    data=caan2.2)
-caco.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                   data=caco.2)
-cain3.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                    data=cain3.2)
-cain4.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                    data=cain4.2)
-stbr3.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                    data=stbr3.2)
-stdi.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                   data=stdi.2)
-stdr2.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                    data=stdr2.2)
-stgl1.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                    data=stgl1.2)
-stin.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                   data=stin.2)
-stpo1.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                    data=stpo1.2)
-stto.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
-                   data=stto.2)
-
-#### Seeing which model is best fit ####
-# use AIC
-# use Likelihood ratio test
-# use Rsquare
-
-AIC(caam.2.mod.cohort, caam.mod.cohort.q)
-lrtest(caam.mod.cohort.q, caam.2.mod.cohort) # no difference in fit
-rsquared(caam.2.mod.cohort)
-rsquared(caam.mod.cohort.q)
-
-AIC(caan1.mod.cohort, caan1.mod.cohort.q)
-lrtest(caan1.mod.cohort.q, caan1.mod.cohort) # no difference in fit
-rsquared(caan1.mod.cohort)
-rsquared(caan1.mod.cohort.q)
-
-AIC(caan2.mod.cohort, caan2.mod.cohort.q)
-lrtest(caan2.mod.cohort.q, caan2.mod.cohort) # no difference in fit
-rsquared(caan2.mod.cohort)
-rsquared(caan2.mod.cohort.q)
-
-AIC(caco.mod.cohort, caco.mod.cohort.q)
-lrtest(caco.mod.cohort.q, caco.mod.cohort)
-rsquared(caco.mod.cohort)
-rsquared(caco.mod.cohort.q)
-
-AIC(cain3.mod.cohort, cain3.mod.cohort.q)
-lrtest(cain3.mod.cohort.q, cain3.mod.cohort)
-rsquared(cain3.mod.cohort)
-rsquared(cain3.mod.cohort.q)
-
-AIC(cain4.mod.cohort, cain4.mod.cohort.q)
-lrtest(cain4.mod.cohort.q, cain4.mod.cohort) # no difference in fit
-rsquared(cain4.mod.cohort)
-rsquared(cain4.mod.cohort.q)
-
-AIC(stbr3.mod.cohort, stbr3.mod.cohort.q)
-lrtest(stbr3.mod.cohort.q, stbr3.mod.cohort)
-rsquared(stbr3.mod.cohort)
-rsquared(stbr3.mod.cohort.q)
-
-AIC(stdi.mod.cohort, stdi.mod.cohort.q)
-lrtest(stdi.mod.cohort.q, stdi.mod.cohort)
-rsquared(stdi.mod.cohort)
-rsquared(stdi.mod.cohort.q)
-
-AIC(stdr2.mod.cohort, stdr2.mod.cohort.q)
-lrtest(stdr2.mod.cohort.q, stdr2.mod.cohort)
-rsquared(stdr2.mod.cohort)
-rsquared(stdr2.mod.cohort.q)
-
-AIC(stgl1.mod.cohort, stgl1.mod.cohort.q)
-lrtest(stgl1.mod.cohort.q, stgl1.mod.cohort) # no difference in fit
-rsquared(stgl1.mod.cohort)
-rsquared(stgl1.mod.cohort.q)
-
-AIC(stin.mod.cohort, stin.mod.cohort.q)
-lrtest(stin.mod.cohort.q, stin.mod.cohort)
-rsquared(stin.mod.cohort)
-rsquared(stin.mod.cohort.q)
-
-AIC(stpo1.mod.cohort, stpo1.mod.cohort.q)
-lrtest(stpo1.mod.cohort.q, stpo1.mod.cohort) # no difference in fit
-rsquared(stpo1.mod.cohort)
-rsquared(stpo1.mod.cohort.q)
-
-AIC(stto.mod.cohort, stto.mod.cohort.q)
-lrtest(stto.mod.cohort.q, stto.mod.cohort)
-rsquared(stto.mod.cohort)
-rsquared(stto.mod.cohort.q)
-
-#### Testing for difference between cohort 2 and 4 ####
-
-# cohort has to be factor to compare with emmeans
-
-caam.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=caam.2)
-caam.m1=emmeans(caam.mod.cohort,pairwise~Cohort)
-# p = 0.9226
-
-caan1.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=caan1.2)
-caan1.m1=emmeans(caan1.mod.cohort,pairwise~Cohort)
-# p = 0.8522
-
-caan2.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=caan2.2)
-caan2.m1=emmeans(caan2.mod.cohort,pairwise~Cohort)
-# p = 0.3676
-
-caco.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                   data=caco.2)
-caco.m1=emmeans(caco.mod.cohort,pairwise~Cohort)
-# best fit was quadratic
-# no cohort 4 for comparison
-
-cain3.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=cain3.2)
-cain3.m1=emmeans(cain3.mod.cohort,pairwise~Cohort)
-# p = <.0001
-
-cain4.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=cain4.2)
-cain4.m1=emmeans(cain4.mod.cohort,pairwise~Cohort)
-# p = 0.9975
-
-stbr3.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=stbr3.2)
-stbr3.m1=emmeans(stbr3.mod.cohort,pairwise~Cohort)
-# p = 0.2244
-
-stdi.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                   data=stdi.2)
-stdi.m1=emmeans(stdi.mod.cohort,pairwise~Cohort)
-# p = <0.001
-
-stdr2.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=stdr2.2)
-stdr2.m1=emmeans(stdr2.mod.cohort,pairwise~Cohort)
-# p = 0.9996
-
-stgl1.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=stgl1.2)
-stgl1.m1=emmeans(stgl1.mod.cohort,pairwise~Cohort)
-# p = 0.1995
-
-stin.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                   data=stin.2)
-stin.m1=emmeans(stin.mod.cohort,pairwise~Cohort)
-# p = <0.001
-
-stpo1.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                    data=stpo1.2)
-stpo1.m1=emmeans(stpo1.mod.cohort,pairwise~Cohort)
-# p = <0.001
-
-stto.mod.cohort=lm(germ.rate~as.factor(Cohort), 
-                   data=stto.2)
-stto.m1=emmeans(stto.mod.cohort,pairwise~Cohort)
-# p = <0.001
-
 #### Calculating Germination Proportions ####
 # calculation for species not considering each block separately
 germ.proport=matrix(data=NA, ncol=13, nrow=7)
@@ -462,7 +177,7 @@ block.temp.diff=stto   %>%
   summarize(average.temp.diff = mean(Temp.Differance, na.rm=TRUE))
 
 #### Plotting Germination Proportions ####
-germ.proport.block.long=read.csv("Germination.Timing/Formatted.Data/germ.proport.block.long.csv", header=T, row.names = 1)
+germ.proport.block.long=read.csv("Formatted.Data/germ.proport.block.long.csv", header=T, row.names = 1)
 
 germ.proport.means <- germ.proport.block.long %>% 
   group_by(Pop, Cohort) %>% 
@@ -487,7 +202,7 @@ block.mean.temp=germ.pheno %>%
   summarize(mean.temp= mean(mean.Temp, na.rm=TRUE))
 write.csv(block.mean.temp, file="block.mean.temp.csv")
 
-germ.proport.temp.block=read.csv("Germination.Timing/Formatted.Data/germ.proportion.block.tempdiff.csv")
+germ.proport.temp.block=read.csv("Formatted.Data/germ.proportion.block.tempdiff.csv")
 
 # remove NAs so poly() works 
 caam.germ.proport=germ.proport.temp.block[!is.na(germ.proport.temp.block$caam.mean.temp),]
@@ -548,7 +263,7 @@ stto.mod.glmer=glmer(y~stto.mean.temp + (1|Block),data=germ.proport.temp.block, 
 # significant
 
 #### Global GLMER model with of germination proportion~mean.temperature ####
-global.germ.proport.temp.block=read.csv("Germination.timing/Formatted.Data/global.germ.proportion.block.tempdiff.csv")
+global.germ.proport.temp.block=read.csv("Formatted.Data/global.germ.proportion.block.tempdiff.csv")
 global.germ.proport.temp.block$Pop=as.factor(global.germ.proport.temp.block$Pop)
 
 y=cbind(global.germ.proport.temp.block$count, (global.germ.proport.temp.block$sample-global.germ.proport.temp.block$count))
@@ -563,7 +278,7 @@ emmip(global.germ.proport.mod, Pop ~ mean.temp, cov.reduce = range)
 global.germ.proport.temp.block$proport=global.germ.proport.temp.block$count/global.germ.proport.temp.block$sample
 
 #### GLM of germination proportion~Cohort ####
-germ.proport.temp.block=read.csv("Germination.Timing/Formatted.Data/germ.proportion.block.tempdiff.csv")
+germ.proport.temp.block=read.csv("Formatted.Data/germ.proportion.block.tempdiff.csv")
 
 # remove NAs so poly() works 
 caam.germ.proport=germ.proport.temp.block[!is.na(germ.proport.temp.block$caam.mean.temp),]
@@ -793,7 +508,7 @@ stto.m1.glm=emmeans(stto.mod.glm,pairwise~Cohort)
 # p = 0.0029
 
 #### Reading in Phylogeny ####
-all.phylo <- read.tree("Germination.Timing/Raw.Data/tree_pruned.new")
+all.phylo <- read.tree("Raw.Data/tree_pruned.new")
 
 sp.list=c("Caulanthus_amplexicaulis","Caulanthus_anceps","Caulanthus_coulteri","Caulanthus_inflatus",
           "Streptanthus_breweri","Streptanthus_diversifolius","Streptanthus_drepanoides",
@@ -825,7 +540,7 @@ plot(tree.2)
 # testing for phylogenetic signal in slopes of germ.rate ~ temp.diff
 
 # read in slopes  dataframe
-model.slopes=read.csv("Germination.Timing/Formatted.Data/slopes.csv", row.names = 1)
+model.slopes=read.csv("Formatted.Data/slopes.csv", row.names = 1)
 colnames(model.slopes)[1]="sp"
 phylosig(tree.2, model.slopes$germrate.slope, method = "K", test = TRUE, nsim=1000)
 # Lapack routine dgesv: system is exactly singular: U[13,13] = 0
@@ -857,7 +572,7 @@ phylosig(tree.2, model.slopes$germproport.cohort, method = "lambda", test = TRUE
 #### Differences in proportion between Round 1 and Round 2 ####
 
 # Round 1 data
-global.germ.proport.temp.block=read.csv("Germination.timing/Formatted.Data/global.germ.proportion.block.tempdiff.csv")
+global.germ.proport.temp.block=read.csv("Formatted.Data/global.germ.proportion.block.tempdiff.csv")
 global.germ.proport.temp.block$Pop=as.factor(global.germ.proport.temp.block$Pop)
 global.germ.proport.temp.block$Round=1
 
@@ -867,7 +582,7 @@ mutate(Pop = recode(Pop, "caan1" = "CAAN1", "cain3" = "CAIN3", "caam" = "CAAM", 
                         "stdi" = "STDI", "stgl1" = "STGL", "stin" = "STIN", "caan2"="CAAN2","cain4"="CAIN4"))
 
 # Round 2 data
-germ.pheno.R2.all=read.csv("Germination.Timing/Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
+germ.pheno.R2.all=read.csv("Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
 germ.pheno.R2=subset(germ.pheno.R2.all, germ.pheno.R2.all$Population !="blank")
 
 R2.germinated=germ.pheno.R2 %>%
@@ -892,11 +607,11 @@ all.proport.data$Pop=as.factor(all.proport.data$Pop)
 
 #### Contingency analyses ####
 
-germ.pheno.all <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
+germ.pheno.all <- read.csv("Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
 # remove blanks from germ.pheno.all
 germ.pheno=subset(germ.pheno.all, germ.pheno.all$Pop !="blank")
 
-germ.pheno.R2.all=read.csv("Germination.Timing/Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
+germ.pheno.R2.all=read.csv("Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
 germ.pheno.R2=subset(germ.pheno.R2.all, germ.pheno.R2.all$Population !="blank")
 
 total.planted=germ.pheno %>%
@@ -909,7 +624,7 @@ total.germ.R2=germ.pheno.R2 %>%
   summarise(germ.R2=sum(germinated),
             planted.R2=sum(planted))
 
-pop.table=read.csv("Germination.Timing/Formatted.Data/Pop.contingeny.table.csv", header=T, row.names=1)
+pop.table=read.csv("Formatted.Data/Pop.contingeny.table.csv", header=T, row.names=1)
 
 pop.chisq=chisq.test(pop.table)
 # significant X = 1006.1, df = 24, p < 2.2e-16
@@ -927,11 +642,11 @@ pop.posthoc=chisq.posthoc.test(pop.table) # bonferroni corrected p values
 # write.csv(pop.posthoc, file="pop.chisq.posthoc.results.csv")
 
 # Pop and Cohort
-germ.pheno.all <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
+germ.pheno.all <- read.csv("Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
 # remove blanks from germ.pheno.all
 germ.pheno=subset(germ.pheno.all, germ.pheno.all$Pop !="blank")
 
-germ.pheno.R2.all=read.csv("Germination.Timing/Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
+germ.pheno.R2.all=read.csv("Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
 germ.pheno.R2=subset(germ.pheno.R2.all, germ.pheno.R2.all$Population !="blank")
 
 total.planted=germ.pheno %>%
@@ -946,24 +661,10 @@ total.germ.R2=germ.pheno.R2 %>%
             planted.R2=sum(planted))
 #write.csv(total.germ.R2, file="test.output.csv")
 
-cohort.table=read.csv("Germination.Timing/Formatted.Data/cohort.contingency.table.csv", header=T, row.names=1)
-
-cohort.chisq=chisq.test(cohort.table)
-# In chisq.test(cohort.table) : Chi-squared approximation may be incorrect because some cells have < 5
-# significant X = 1919, df = 180, p < 2.2e-16
-
-cohort.chisq$residuals
-# CAAM negative association for all cohort for both years, positive association for all cohorts with Never
-# CAAN1 negative association for all cohort for Year 1, positive association for all cohorts Year 2
-# CAAN2 negative association for all cohort for Year 1, positive association for all cohorts Year 2 except cohort 7
-# 11 of 13 species have negative association between cohort 7 and Year 1, all except STPO and STTO
-
-cohort.posthoc=chisq.posthoc.test(cohort.table) # bonferroni corrected p values
-
 #### PGLMM ####
 
 # read in data
-global.germ.proport.temp.block=read.csv("Germination.timing/Formatted.Data/global.germ.proportion.block.tempdiff.csv")
+global.germ.proport.temp.block=read.csv("Formatted.Data/global.germ.proportion.block.tempdiff.csv")
 global.germ.proport.temp.block$Pop=as.factor(global.germ.proport.temp.block$Pop)
 
 # phylogeny read in above
@@ -1205,3 +906,288 @@ t(LRTs.temps)
 # sp__ and mean.temp|sp__ significant
 
 
+#### Code below analyzes germination rate from bioRxiv version of ms ####
+#### Calculating Germination Rate ####
+# 1/days2germ2
+germ.pheno.all <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
+# remove blanks from germ.pheno.all
+germ.pheno=subset(germ.pheno.all, germ.pheno.all$Pop !="blank")
+
+germ.pheno[,21]=1/germ.pheno$days2germ2
+colnames(germ.pheno)[21]="germ.rate" 
+
+#### Linear model of Germination Rate~mean temperature ####
+ggplot(germ.pheno, aes(x=mean.Temp, y=germ.rate, color=as.factor(Cohort), group=Pop))+
+  geom_point()+
+  geom_smooth(method="lm",SE=FALSE)+
+  facet_wrap(~Pop)
+
+caam.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                        data=caam.2) # significant
+caan1.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                         data=caan1.2) # significant
+caan2.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                         data=caan2.2) # significant
+caco.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                        data=caco.2) # significant
+cain3.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                         data=cain3.2) # significant
+cain4.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                         data=cain4.2) # significant
+stbr3.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                         data=stbr3.2) # significant
+stdi.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                        data=stdi.2) # significant
+stdr2.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                         data=stdr2.2) # significant
+stgl1.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                         data=stgl1.2) # significant
+stin.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                        data=stin.2) # significant
+stpo1.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                         data=stpo1.2) # significant
+stto.mod.mean.Temp=lmer(germ.rate~mean.Temp+(1|Cohort), 
+                        data=stto.2) # significant
+
+#### Global LM model with of germination rate~mean.temperature ####
+
+germ.pheno.2=germ.pheno[!is.na(germ.pheno$mean.Temp),] # remove NAs
+
+global.rate.mod=lmer(germ.rate~mean.Temp*Pop + Cohort + (1|Block), 
+                     data=germ.pheno.2)
+
+germ.rate.emm=emtrends(global.rate.mod, "Pop", var="mean.Temp")
+#write.csv(germ.rate.emm, file="germrate.meantemp.slopes.csv")
+germ.rate.emm.pairs=emtrends(global.rate.mod, pairwise~Pop, var="mean.Temp")
+#write.csv(germ.rate.emm.pairs$contrasts, file="germrate.meantemp.contrasts.csv")
+emmip(global.rate.mod, Pop ~ mean.Temp, cov.reduce = range)
+
+#### Linear model of germ rate~cohort ####
+# need to test if linear or quadratic is better fit for each species
+
+# make a separate dataframe for each species
+# remove NAs so poly() will work
+caam=germ.pheno[germ.pheno$Pop=="CAAM-GB",]
+caam.2=caam[!is.na(caam$mean.Temp),]
+caan1=germ.pheno[germ.pheno$Pop =="CAAN1",]
+caan1.2=caan1[!is.na(caan1$mean.Temp),]
+caan2=germ.pheno[germ.pheno$Pop =="CAAN2",]
+caan2.2=caan2[!is.na(caan2$mean.Temp),]
+caco=germ.pheno[germ.pheno$Pop =="CACO1",]
+caco.2=caco[!is.na(caco$mean.Temp),]
+cain3=germ.pheno[germ.pheno$Pop =="CAIN3",]
+cain3.2=cain3[!is.na(cain3$mean.Temp),]
+cain4=germ.pheno[germ.pheno$Pop =="CAIN4",]
+cain4.2=cain4[!is.na(cain4$mean.Temp),]
+stbr3=germ.pheno[germ.pheno$Pop =="STBR3",]
+stbr3.2=stbr3[!is.na(stbr3$mean.Temp),]
+stdi=germ.pheno[germ.pheno$Pop =="STDI",]
+stdi.2=stdi[!is.na(stdi$mean.Temp),]
+stdr2=germ.pheno[germ.pheno$Pop =="STDR2",]
+stdr2.2=stdr2[!is.na(stdr2$mean.Temp),]
+stgl1=germ.pheno[germ.pheno$Pop =="STGL1",]
+stgl1.2=stgl1[!is.na(stgl1$mean.Temp),]
+stin=germ.pheno[germ.pheno$Pop =="STIN",]
+stin.2=stin[!is.na(stin$mean.Temp),]
+stpo1=germ.pheno[germ.pheno$Pop =="STPO1",]
+stpo1.2=stpo1[!is.na(stpo1$mean.Temp),]
+stto=germ.pheno[germ.pheno$Pop =="STTO-BH",]
+stto.2=stto[!is.na(stto$mean.Temp),]
+
+# cohort is not treated as factor
+caam.2.mod.cohort=lm(germ.rate~Cohort,
+                     data=caam.2)
+caan1.mod.cohort=lm(germ.rate~Cohort, 
+                    data=caan1.2)
+caan2.mod.cohort=lm(germ.rate~Cohort, 
+                    data=caan2.2)
+caco.mod.cohort=lm(germ.rate~Cohort, 
+                   data=caco.2)
+cain3.mod.cohort=lm(germ.rate~Cohort, 
+                    data=cain3.2)
+cain4.mod.cohort=lm(germ.rate~Cohort, 
+                    data=cain4.2)
+stbr3.mod.cohort=lm(germ.rate~Cohort, 
+                    data=stbr3.2)
+stdi.mod.cohort=lm(germ.rate~Cohort, 
+                   data=stdi.2)
+stdr2.mod.cohort=lm(germ.rate~Cohort, 
+                    data=stdr2.2)
+stgl1.mod.cohort=lm(germ.rate~Cohort, 
+                    data=stgl1.2)
+stin.mod.cohort=lm(germ.rate~Cohort, 
+                   data=stin.2)
+stpo1.mod.cohort=lm(germ.rate~Cohort, 
+                    data=stpo1.2)
+stto.mod.cohort=lm(germ.rate~Cohort, 
+                   data=stto.2)
+
+#### Quadratic model of germ rate~cohort ####
+
+# cohort is not treated as factor
+caam.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                     data=caam.2)
+caan1.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                      data=caan1.2)
+caan2.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                      data=caan2.2)
+caco.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                     data=caco.2)
+cain3.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                      data=cain3.2)
+cain4.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                      data=cain4.2)
+stbr3.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                      data=stbr3.2)
+stdi.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                     data=stdi.2)
+stdr2.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                      data=stdr2.2)
+stgl1.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                      data=stgl1.2)
+stin.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                     data=stin.2)
+stpo1.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                      data=stpo1.2)
+stto.mod.cohort.q=lm(germ.rate~poly(Cohort,2), 
+                     data=stto.2)
+
+#### Seeing which model is best fit ####
+# use AIC
+# use Likelihood ratio test
+# use Rsquare
+
+AIC(caam.2.mod.cohort, caam.mod.cohort.q)
+lrtest(caam.mod.cohort.q, caam.2.mod.cohort) # no difference in fit
+rsquared(caam.2.mod.cohort)
+rsquared(caam.mod.cohort.q)
+
+AIC(caan1.mod.cohort, caan1.mod.cohort.q)
+lrtest(caan1.mod.cohort.q, caan1.mod.cohort) # no difference in fit
+rsquared(caan1.mod.cohort)
+rsquared(caan1.mod.cohort.q)
+
+AIC(caan2.mod.cohort, caan2.mod.cohort.q)
+lrtest(caan2.mod.cohort.q, caan2.mod.cohort) # no difference in fit
+rsquared(caan2.mod.cohort)
+rsquared(caan2.mod.cohort.q)
+
+AIC(caco.mod.cohort, caco.mod.cohort.q)
+lrtest(caco.mod.cohort.q, caco.mod.cohort)
+rsquared(caco.mod.cohort)
+rsquared(caco.mod.cohort.q)
+
+AIC(cain3.mod.cohort, cain3.mod.cohort.q)
+lrtest(cain3.mod.cohort.q, cain3.mod.cohort)
+rsquared(cain3.mod.cohort)
+rsquared(cain3.mod.cohort.q)
+
+AIC(cain4.mod.cohort, cain4.mod.cohort.q)
+lrtest(cain4.mod.cohort.q, cain4.mod.cohort) # no difference in fit
+rsquared(cain4.mod.cohort)
+rsquared(cain4.mod.cohort.q)
+
+AIC(stbr3.mod.cohort, stbr3.mod.cohort.q)
+lrtest(stbr3.mod.cohort.q, stbr3.mod.cohort)
+rsquared(stbr3.mod.cohort)
+rsquared(stbr3.mod.cohort.q)
+
+AIC(stdi.mod.cohort, stdi.mod.cohort.q)
+lrtest(stdi.mod.cohort.q, stdi.mod.cohort)
+rsquared(stdi.mod.cohort)
+rsquared(stdi.mod.cohort.q)
+
+AIC(stdr2.mod.cohort, stdr2.mod.cohort.q)
+lrtest(stdr2.mod.cohort.q, stdr2.mod.cohort)
+rsquared(stdr2.mod.cohort)
+rsquared(stdr2.mod.cohort.q)
+
+AIC(stgl1.mod.cohort, stgl1.mod.cohort.q)
+lrtest(stgl1.mod.cohort.q, stgl1.mod.cohort) # no difference in fit
+rsquared(stgl1.mod.cohort)
+rsquared(stgl1.mod.cohort.q)
+
+AIC(stin.mod.cohort, stin.mod.cohort.q)
+lrtest(stin.mod.cohort.q, stin.mod.cohort)
+rsquared(stin.mod.cohort)
+rsquared(stin.mod.cohort.q)
+
+AIC(stpo1.mod.cohort, stpo1.mod.cohort.q)
+lrtest(stpo1.mod.cohort.q, stpo1.mod.cohort) # no difference in fit
+rsquared(stpo1.mod.cohort)
+rsquared(stpo1.mod.cohort.q)
+
+AIC(stto.mod.cohort, stto.mod.cohort.q)
+lrtest(stto.mod.cohort.q, stto.mod.cohort)
+rsquared(stto.mod.cohort)
+rsquared(stto.mod.cohort.q)
+
+#### Testing for difference between cohort 2 and 4 ####
+
+# cohort has to be factor to compare with emmeans
+
+caam.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                   data=caam.2)
+caam.m1=emmeans(caam.mod.cohort,pairwise~Cohort)
+# p = 0.9226
+
+caan1.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                    data=caan1.2)
+caan1.m1=emmeans(caan1.mod.cohort,pairwise~Cohort)
+# p = 0.8522
+
+caan2.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                    data=caan2.2)
+caan2.m1=emmeans(caan2.mod.cohort,pairwise~Cohort)
+# p = 0.3676
+
+caco.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                   data=caco.2)
+caco.m1=emmeans(caco.mod.cohort,pairwise~Cohort)
+# best fit was quadratic
+# no cohort 4 for comparison
+
+cain3.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                    data=cain3.2)
+cain3.m1=emmeans(cain3.mod.cohort,pairwise~Cohort)
+# p = <.0001
+
+cain4.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                    data=cain4.2)
+cain4.m1=emmeans(cain4.mod.cohort,pairwise~Cohort)
+# p = 0.9975
+
+stbr3.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                    data=stbr3.2)
+stbr3.m1=emmeans(stbr3.mod.cohort,pairwise~Cohort)
+# p = 0.2244
+
+stdi.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                   data=stdi.2)
+stdi.m1=emmeans(stdi.mod.cohort,pairwise~Cohort)
+# p = <0.001
+
+stdr2.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                    data=stdr2.2)
+stdr2.m1=emmeans(stdr2.mod.cohort,pairwise~Cohort)
+# p = 0.9996
+
+stgl1.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                    data=stgl1.2)
+stgl1.m1=emmeans(stgl1.mod.cohort,pairwise~Cohort)
+# p = 0.1995
+
+stin.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                   data=stin.2)
+stin.m1=emmeans(stin.mod.cohort,pairwise~Cohort)
+# p = <0.001
+
+stpo1.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                    data=stpo1.2)
+stpo1.m1=emmeans(stpo1.mod.cohort,pairwise~Cohort)
+# p = <0.001
+
+stto.mod.cohort=lm(germ.rate~as.factor(Cohort), 
+                   data=stto.2)
+stto.m1=emmeans(stto.mod.cohort,pairwise~Cohort)
+# p = <0.001

@@ -24,7 +24,7 @@ library(gridExtra)
 
 #### Figure 1A: Map ####
 
-sp.points=read.csv("Germination.Timing/Formatted.Data/lat.long.csv")
+sp.points=read.csv("Formatted.Data/lat.long.csv")
 
 sp.points = sp.points %>% 
   mutate(altpop = 1) %>%
@@ -196,10 +196,10 @@ fig1_draft
 # ggsave("Germination.Timing/Plots/fig1_mapandPCA_no color.pdf", height = 8, width = 12)
 #cowplot::save_plot( "Germination.Timing/Plots/fig1_mapandPCA_no color.jpg", fig1_draft, base_height = 8, base_width = 12)
 
-#### Figure 2:  Cohort timing and temperatures ####
+#### Figure 2A:  Cohort timing and temperatures ####
 #see prep iButton data script for manipulations to this dataset
 
-ibuttondat = read.csv("Germination.Timing/Formatted.Data/ibutton_allcohorts.csv")
+ibuttondat = read.csv("Formatted.Data/ibutton_allcohorts.csv")
 head(ibuttondat)
 str(ibuttondat) #didn't read in dates in date format
 summary(ibuttondat)
@@ -259,7 +259,7 @@ Fig2
 
 # adding year 2 ibutton data to plot
 
-ibutton.y2 = read.csv("Germination.Timing/Formatted.Data/ibutton_round_2.csv")
+ibutton.y2 = read.csv("Formatted.Data/ibutton_round_2.csv")
 
 ibutton.y2.2 = ibutton.y2 %>%
   mutate(Date = as.Date(Date, "%m/%d/%y"))
@@ -299,9 +299,9 @@ all.years.temps = left_join(ibutton.mean.2,ibutton.y2.mean.2, by = join_by("Date
 #output to organize
 
 
-#write.csv(all.years.temps, file = "./Germination.Timing/Formatted.Data/all.years.temp.csv")
+#write.csv(all.years.temps, file = "./Formatted.Data/all.years.temp.csv")
 
-all.years.temps = read.csv("./Germination.Timing/Formatted.Data/all.years.temp.csv") # didn't work
+all.years.temps = read.csv("./Formatted.Data/all.years.temp.csv") # didn't work
 
 cols <- c("YEAR1"="black","YEAR2"= "orange")
 year1.temp = ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
@@ -329,10 +329,10 @@ year1.temp.nolegend = ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
 year1.temp.nolegend
 
 
-#### Figure 3A: Temperatures that seeds germinated under ####
+#### Figure S2B: Temperatures that seeds germinated under ####
 #density ridge plots that Jenny started
 
-germ.pheno = read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1) # Sam reading in file
+germ.pheno = read.csv("Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1) # Sam reading in file
 summary(germ.pheno)
 dim(germ.pheno)
 
@@ -364,7 +364,7 @@ germpheno_2plot = germpheno_2plot %>%
 table(germpheno_2plot$Pop, germpheno_2plot$altpop)
 
 # read in Round 2 data and add as additional cohort
-germ.pheno.R2 = read.csv("Germination.Timing/Formatted.Data/germ.pheno.round.2.temps.ranges.csv", row.names = 1)
+germ.pheno.R2 = read.csv("Formatted.Data/germ.pheno.round.2.temps.ranges.csv", row.names = 1)
 summary(germ.pheno.R2)
 dim(germ.pheno.R2)
 
@@ -417,15 +417,15 @@ FigureS2=plot_grid(year1.temp.nolegend,fig3a, labels = c("A","B"))
 #ggsave("Germination.Timing/Plots/FigureS2.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/FigureS2.png", height = 10, width = 12)
 
-#### Figure 3B: Germination Fraction for Rounds 1 and 2 #####
+#### Figure 2B: Germination Fraction for Rounds 1 and 2 #####
 # calculating germination proportion
 
 # Round 1
-germ.pheno.all <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
+germ.pheno.all <- read.csv("Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
 # remove blanks from germ.pheno.all
 germ.pheno=subset(germ.pheno.all, germ.pheno.all$Pop !="blank")
 
-germ.pheno.R2.all=read.csv("Germination.Timing/Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
+germ.pheno.R2.all=read.csv("Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
 germ.pheno.R2=subset(germ.pheno.R2.all, germ.pheno.R2.all$Population !="blank")
 
 total.planted=germ.pheno %>%
@@ -462,7 +462,7 @@ colnames(total.planted)[10]="total.proportion"
 
 # made a new data table in long format
 
-cohort.proportion.data=read.csv("Germination.Timing/Formatted.Data/proportion.rounds.cohort.plot.csv")
+cohort.proportion.data=read.csv("Formatted.Data/proportion.rounds.cohort.plot.csv")
 cohort.proportion.data$Pop=cohort.proportion.data$Species # adding Pop column
 
 cohort.proportion.data.2 = cohort.proportion.data %>%
@@ -510,9 +510,9 @@ Fig2.1
 #ggsave("Germination.Timing/Plots/germproport.rounds.separate.pops.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/germproport.rounds.separate.pops.png", height = 10, width = 12)
 
-#### Figure 4: Germination Fraction~Cohort plots ####
+#### Figure 3: Germination Fraction~Cohort plots ####
 #GLM of germination proportion~Cohort
-germ.proport.temp.block=read.csv("Germination.Timing/Formatted.Data/germ.proportion.block.tempdiff.csv")
+germ.proport.temp.block=read.csv("Formatted.Data/germ.proportion.block.tempdiff.csv")
 
 # remove NAs so poly() works 
 caam.germ.proport=germ.proport.temp.block[!is.na(germ.proport.temp.block$caam.mean.temp),]
@@ -1174,7 +1174,7 @@ plot_grid(stdr.plot.2,stbr.plot.2,stto.plot.2,stdi.plot.2,stpo.plot.2,caam.plot,
 #ggsave("Germination.Timing/Plots/Germproport_cohort_panelbyspecies.CI.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/Germproport_cohort_panelbyspecies.CI.png", height = 10, width = 12)
 
-#### Figure 5: Germination Rate~Cohort plots ####
+#### Figure NA: Germination Rate~Cohort plots from pre-print ####
 
 # 1/days2germ2
 germ.pheno.all <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
@@ -1645,7 +1645,7 @@ plot_grid(stdr.plot.2,stbr.plot.2,stto.plot.2,stdi.plot.2,stpo.plot.2,caam.plot.
 
 #### Figure 6:  Germination Fraction as a function of cohort and temperature ####
 
-global.germ.proport.temp.block=read.csv("Germination.timing/Formatted.Data/global.germ.proportion.block.tempdiff.csv")
+global.germ.proport.temp.block=read.csv("Formatted.Data/global.germ.proportion.block.tempdiff.csv")
 global.germ.proport.temp.block$Pop=as.factor(global.germ.proport.temp.block$Pop)
 
 #Jenny adding species name and altpop to germ proportion dataframe
@@ -1771,7 +1771,7 @@ germproport_wpred + geom_point(data = global.germ.proport.block.R2.3,aes(x= mean
                                                                          group = altpop), color = "red",show.legend = FALSE)
 
 
-#### Figure 7: Germination rate as a function of cohort and temperature ####
+#### Figure NA: Germination rate as a function of cohort and temperature ####
 
 germ.pheno.all <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv", row.names = 1)
 # remove blanks from germ.pheno.all
@@ -1889,10 +1889,10 @@ germrate_all_wpred = germrate_obs_all + geom_line(data = dat,aes(x= mean.Temp, y
                                                                  shape = altpop, group = Species, linetype = Species, color = Species), size=1) #+
 germrate_all_wpred
 
-#### Figure 8: comparing species slopes #####
+#### Figure 5: comparing species slopes #####
 # read in phylogeny
 
-all.phylo <- read.tree("Germination.Timing/Raw.Data/tree_pruned.new")
+all.phylo <- read.tree("./Raw.Data/tree_pruned.new")
 
 sp.list=c("Caulanthus_amplexicaulis","Caulanthus_anceps","Caulanthus_coulteri","Caulanthus_inflatus",
           "Streptanthus_breweri","Streptanthus_diversifolius","Streptanthus_drepanoides",
@@ -1925,7 +1925,7 @@ tree.2=bind.tip(tree.1, tip.label = "Caulanthus_inflatus.4", edge.length=0.00115
 plot(tree.2)
 
 # read in the slopes of the relationships
-slopes <- read.csv("Germination.Timing/Formatted.Data/slopes.csv", row.names = 1)
+slopes <- read.csv("./Formatted.Data/slopes.csv", row.names = 1)
 
 # making slopes named vectors
 germrate.slope=slopes$germrate.slope

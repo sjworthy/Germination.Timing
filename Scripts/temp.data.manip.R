@@ -1,14 +1,14 @@
 # Calculate average minimum, mean, and maximum temperature for each individual
 # between rainfall onset data and germ date
-#rm(list=ls(all=T)) #code to clear console if needed
+
 
 library(dplyr)
 library(lubridate)
 library(ggplot2)
 
 #### read in data sets ####
-ibutton_all <- read.csv("Germination.Timing/Formatted.Data/ibutton_allcohorts.csv")
-germ.pheno <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.formatted.csv", row.names = 1)
+ibutton_all <- read.csv("Formatted.Data/ibutton_allcohorts.csv")
+germ.pheno <- read.csv("Formatted.Data/germ.pheno.formatted.csv", row.names = 1)
 
 # Change character dates to actual Date
 germ.pheno$germdate=as.Date(germ.pheno$germdate)
@@ -47,7 +47,7 @@ for(i in 1:dim(germ.pheno)[1]){
 
 colnames(germ.pheno)[19]="mean.Max.Temp"
 
-write.csv(germ.pheno, file = "Germination.Timing/Formatted.Data/germ.pheno.temps.ranges.csv")
+write.csv(germ.pheno, file = "Formatted.Data/germ.pheno.temps.ranges.csv")
 
 
 #look at histograms
@@ -55,33 +55,17 @@ ggplot(data= germ.pheno, aes(x= mean.Temp)) + geom_histogram(binwidth = 1) + fac
 
 ### getting frequency of temperatures experienced by each seed
 #### read in data sets ####
-ibutton_all <- read.csv("Germination.Timing/Formatted.Data/ibutton_allcohorts.csv")
-germ.pheno <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.formatted.csv", row.names = 1)
+ibutton_all <- read.csv("Formatted.Data/ibutton_allcohorts.csv")
+germ.pheno <- read.csv("Formatted.Data/germ.pheno.formatted.csv", row.names = 1)
 
 # Change character dates to actual Date
 germ.pheno$germdate=as.Date(germ.pheno$germdate)
 germ.pheno$plantdate=as.Date(germ.pheno$plantdate)
 ibutton_all$Date=as.Date(ibutton_all$Date)
 
-#### take difference between hourly temp and Topt per seed ####
-# get the average of all these differences
-# get the sum of all these differences
-
 #### read in data sets ####
-ibutton_all <- read.csv("Germination.Timing/Formatted.Data/ibutton_allcohorts.csv")
+ibutton_all <- read.csv("Formatted.Data/ibutton_allcohorts.csv")
 ibutton_all$Date=as.Date(ibutton_all$Date)
-
-#### calculate mean temperature between plant date and germ date ####
-for(i in 1:dim(germ.pheno2)[1]){
-  data=subset(ibutton_all, between(ibutton_all$Date, germ.pheno2[i,8], germ.pheno2[i,6]))
-  diff=data$Value-germ.pheno2[i,20]
-  mean.hourly.diff=mean(diff, na.rm = TRUE)
-  sum.hourly.diff=sum(diff, na.rm = TRUE)
-  germ.pheno2[i,23]=mean.hourly.diff
-  germ.pheno2[i,24]=sum.hourly.diff
-}
-
-# gives the same value if you just take the Differences between Topt and mean Temp.
 
 #### get hourly temperature between plant date and germ date ####
 # need to figure out how to get the data for all seeds in a cohort
@@ -125,8 +109,8 @@ quant.temps=germ.pheno.temp  %>%
   summarize(my_quantile(mean.Temp, c(0.05,0.95)))
 
 #### Get mean temperature between re-water date and germ date for Round 2 ####
-ibutton_all <- read.csv("Germination.Timing/Formatted.Data/ibutton_round_2.csv")
-germ.pheno <- read.csv("Germination.Timing/Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
+ibutton_all <- read.csv("Formatted.Data/ibutton_round_2.csv")
+germ.pheno <- read.csv("Formatted.Data/germ.pheno.round.2.formatted.csv", row.names = 1)
 
 # Change character dates to actual Date
 germ.pheno$germdate=as.Date(germ.pheno$germdate)
@@ -147,9 +131,3 @@ write.csv(germ.pheno, file = "Germination.Timing/Formatted.Data/germ.pheno.round
 
 #look at histograms
 ggplot(data= germ.pheno, aes(x= mean.Temp)) + geom_histogram(binwidth = 1) + facet_wrap(~ Population)
-
-
-
-
-
-

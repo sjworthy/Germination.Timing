@@ -9,7 +9,7 @@ library(cowplot)
 
 #### species info ####
 
-species = read.csv("./Germination.Timing/Raw.Data/species.info.csv")
+species = read.csv("./Raw.Data/species.info.csv")
 # Figure 1b uses years 1991 - 2016 and months September - December
 
 #### Determining species climate space #####

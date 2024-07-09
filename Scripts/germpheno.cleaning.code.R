@@ -5,7 +5,7 @@ library(readxl)
 library(lubridate)
 
 # Raw Data File
-germdat = read.csv('./Germination.Timing/Raw.Data/Germ Pheno Master Datasheet.csv')
+germdat = read.csv('./Raw.Data/Germ Pheno Master Datasheet.csv')
 
 # change column name to match previously used code
 germdatx=germdat
@@ -48,13 +48,12 @@ germdatx2 = mutate(germdatx2, germdate = ymd(germdate))
 
 # load lookup table with planting dates for each cohort
 # This data is in the raw data file
-planted = read_xlsx("./Germination.Timing/Raw.Data/Fall 2020 germ experiment schedules.xlsx")
+planted = read_xlsx("./Raw.Data/Fall 2020 germ experiment schedules.xlsx")
 planted = mutate(planted, plantdate = ymd(plantdate))
 
 # merge germ data file and planted date file
 # both datasets have "Cohort" so it should recognize this
 germdaty = left_join(germdatx2, planted, by = c("Cohort"))
-
 
 # format dates
 germdaty2 = germdaty %>%
@@ -80,7 +79,7 @@ write.csv(germdaty3, file="germ.pheno.formatted.csv")
 #### Formatting germination phenology Round 2 data ####
 
 # Raw Data File
-germdat = read.csv('./Germination.Timing/Raw.Data/Germ_Pheno_Round_2_Germination_Final Copy.csv')
+germdat = read.csv('./Raw.Data/Germ_Pheno_Round_2_Germination_Final Copy.csv')
 
 # change column name to match previously used code
 germdatx=germdat
@@ -99,7 +98,7 @@ germdatx = germdatx %>%
 
 # load lookup table with planting dates for each cohort
 # This data is in the raw data file
-planted = read_xlsx("./Germination.Timing/Raw.Data/Fall 2020 germ experiment schedules.xlsx")
+planted = read_xlsx("./Raw.Data/Fall 2020 germ experiment schedules.xlsx")
 planted = mutate(planted, plantdate = ymd(plantdate))
 
 # merge germ data file and planted date file
@@ -145,10 +144,3 @@ germdaty5=germdaty4[-c(1178,1508,2012,663,1442,2372,541,2017,626,132,1576,17,129
 # can be found in Formatted.Data
 
 write.csv(germdaty5, file="germ.pheno.round.2.formatted.csv")
-
-
-
-
-
-
-  
