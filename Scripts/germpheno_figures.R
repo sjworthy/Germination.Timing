@@ -49,6 +49,8 @@ map <- ggplot() +
 
 map
 
+ggsave("Plots/Figure1a.tiff", width = 15, height = 15, units = c("cm"), device = "tiff", dpi=600)
+
 #ggsave("Germination.Timing/Plots/map_no color.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/map_no color.png", height = 10, width = 12)
 
@@ -148,10 +150,10 @@ pops_clim_pc$ID.2=c("CAAM","CAAN1","CAAN2","CACO","CAIN3","CAIN4","STBR","STDI",
 
 #try biplot
 #define annotations to axis labels for PCA axes
- text_x_low = textGrob("Hot & dry", gp=gpar(fontsize = 9,col="gray35"))
- text_x_high = textGrob("Cool & wet", gp=gpar(fontsize = 9,col="gray35"))
- text_y_low = textGrob("Low CV(PPT)", gp=gpar(fontsize = 9,col="gray35"), rot=90)
- text_y_high = textGrob("High CV(PPT)", gp=gpar(fontsize = 9,col="gray35"), rot=90)
+ text_x_low = textGrob("Hot & dry", gp=gpar(fontsize = 11,col="gray35"))
+ text_x_high = textGrob("Cool & wet", gp=gpar(fontsize = 11,col="gray35"))
+ text_y_low = textGrob("Low CV (PPT)", gp=gpar(fontsize = 11,col="gray35"), rot=90)
+ text_y_high = textGrob("High CV (PPT)", gp=gpar(fontsize = 11,col="gray35"), rot=90)
  
 seasonalbiplot = ggbiplot(pc.seasonal.2a,  varname.adjust = 1.1) +
   geom_point() + 
@@ -161,10 +163,11 @@ seasonalbiplot = ggbiplot(pc.seasonal.2a,  varname.adjust = 1.1) +
       y = paste0("Standardized PC2\n (", round(pcvarexplained$var_explained[2]*100,1), "% explained var.)") #,
      # color = "Genus" #add back for colored points
      ) + xlim(-2,2) + ylim(-1.1,2.3)+
- annotation_custom(text_x_high,xmin=1.8,xmax=2,ymin=-1.6,ymax=-1.6) + #here I just fiddled with coordinates to get titles where we want them
-  annotation_custom(text_x_low,xmin=-2,xmax=-1.9,ymin=-1.6,ymax=-1.6) + 
-  annotation_custom(text_y_high,xmin=-2.5,xmax=-2.5,ymin=1.8,ymax=2) + 
-  annotation_custom(text_y_low,xmin=-2.5,xmax=-2.5,ymin=-1.3,ymax=-1.1) + 
+  theme_classic(base_size = 18)+
+ annotation_custom(text_x_high,xmin=1.8,xmax=2,ymin=-1.7,ymax=-1.7) + #here I just fiddled with coordinates to get titles where we want them
+  annotation_custom(text_x_low,xmin=-2,xmax=-1.9,ymin=-1.7,ymax=-1.7) + 
+  annotation_custom(text_y_high,xmin=-2.6,xmax=-2.6,ymin=1.9,ymax=2.3) + 
+  annotation_custom(text_y_low,xmin=-2.6,xmax=-2.6,ymin=-0.8,ymax=-1.1) + 
   coord_cartesian( clip="off") #this keeps it from clipping off the stuff outside the plot
 
 seasonalbiplot
@@ -181,20 +184,26 @@ seasonalbiplot$layers[[txt[1]]]$aes_params$colour <- 'gray60'
 fig1b = seasonalbiplot 
 fig1b
 
+ggsave("Plots/Figure1b.tiff", width = 15, height = 15, units = c("cm"), device = "tiff", dpi=600)
+
+
 #ggsave("Germination.Timing/Plots/climatePCA_fig1b.pdf", width = 5, height = 5)
 #ggsave("Germination.Timing/Plots/climatePCA_fig1b.jpg", width = 5, height = 5)
 
 #put panel together
 
-fig1_draft = plot_grid(map, fig1b, labels = c("A.", "B."),ncol= 2, rel_heights = c(1,0.3),
-                       rel_heights = c(1,0.3))
-
-plot_grid(map, fig1b, labels = c("A.", "B."), rel_widths = c(0.5,0.5), rel_heights = c(1, 0.3))
+fig1_draft = plot_grid(map, fig1b, labels = c("(a)", "(b)"),ncol= 2, rel_heights = c(1,0.3),
+                       rel_heights = c(1,0.3), align = "hv")
 fig1_draft
+
+
+# for journal, did zoom view, made smaller, save image as, opened to preview, saved as .tiff
+
+plot_grid(map, fig1b, labels = c("(a)", "(b)"), rel_widths = c(0.5,0.5), rel_heights = c(1, 0.3))
+cowplot::save_plot( "Plots/Figure1.tiff", fig1_draft, base_height = 8, base_width = 12)
 
 #ggsave("Germination.Timing/Plots/fig1_mapandPCA_no color.jpg", height = 8, width = 12)
 # ggsave("Germination.Timing/Plots/fig1_mapandPCA_no color.pdf", height = 8, width = 12)
-#cowplot::save_plot( "Germination.Timing/Plots/fig1_mapandPCA_no color.jpg", fig1_draft, base_height = 8, base_width = 12)
 
 #### Figure 2A:  Cohort timing and temperatures ####
 #see prep iButton data script for manipulations to this dataset
@@ -242,7 +251,7 @@ Fig2=ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
   xlab("Date")+
   ylab("Mean Daily Temperature  (°C)\n Year One")+
   ylim(0,35)+
-  theme_classic(base_size = 15)+
+  theme_classic(base_size = 20)+
   geom_vline(xintercept=as.numeric(ibutton.mean[1,1]), linetype="dashed", color="#5495CF",linewidth=1)+ # 9/17/2020
   geom_vline(xintercept=as.numeric(ibutton.mean[16,1]), linetype="dashed", color="#847CA3",linewidth=1)+ # 10/2/2020
   geom_vline(xintercept=as.numeric(ibutton.mean[30,1]), linetype="dashed", color="#E45A5A",linewidth=1)+ # 10/16/2020
@@ -479,9 +488,9 @@ cohort.proportion.data.2 = cohort.proportion.data %>%
 # plot with pops separate
 fig3b=ggplot(cohort.proportion.data.2, aes(fill=Year, y=Germination.Proportion, x=factor(Cohort))) + 
   geom_bar(position=position_stack(reverse = TRUE), stat="identity")+
-  theme_classic(base_size = 15)+scale_fill_manual(values = c(16,1))+
+  theme_classic(base_size = 20)+scale_fill_manual(values = c(16,1))+
   facet_wrap(.~phy_order, ncol=4)+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), legend.position = c(.9,.000005))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))+
   labs(x="Rainfall Onset Date", y="Germination Fraction")
 fig3b
@@ -492,8 +501,10 @@ fig3b
 #fig3_draft
 # ggsave("Germination.Timing/Plots/fig3.2.pdf", height = 8, width = 12)
 
-Fig2_draft = plot_grid(Fig2,fig3b, labels = c("A.", "B."), rel_widths = c(0.9, 1),ncol = 2)
+Fig2_draft = plot_grid(Fig2,fig3b, labels = c("(a)", "(b)"), rel_widths = c(0.8, 1.2),ncol = 2)
 Fig2_draft
+ggsave("Plots/Figure2.tiff", width = 10, height = 10, units = c("cm"), device = "tiff", dpi=600)
+
 #ggsave("Germination.Timing/Plots/fig2.revised.pdf", height = 8, width = 12)
 #ggsave("Germination.Timing/Plots/fig2.revised.jpg", height = 8, width = 12)
 
@@ -915,7 +926,7 @@ caam.plot=ggplot(caam.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("CAAM")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -930,7 +941,7 @@ caan.plot=ggplot(caan.all.proport.factor.predict, aes(x=cohort.factor, y=y, grou
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75,show.legend = FALSE)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black","gray","black","gray"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("CAAN")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -941,10 +952,11 @@ caan.plot.2=ggplot(caan.all.proport.factor.predict, aes(x=cohort.factor, y=y, gr
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black","gray","black","gray"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("CAAN")+
-  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = c(0.85,0.9))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 caan.plot.2
 
@@ -963,7 +975,7 @@ caco.plot=ggplot(caco.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("CACO")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -983,7 +995,7 @@ cain.plot=ggplot(cain.all.proport.factor.predict, aes(x=cohort.factor, y=y, grou
   geom_errorbar(data=sig.cohort, aes(ymin=ymin, ymax=ymax),width=0.75, color="red")+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black","gray"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("CAIN")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -1009,10 +1021,11 @@ cain.plot.3=ggplot(cain.all.proport.factor.predict.2, aes(x=cohort.factor, y=y, 
   geom_errorbar(data=sig.cohort, aes(ymin=ymin, ymax=ymax),width=0.75, color="red")+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black","gray"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("CAIN")+
-  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = c(0.85,0.9))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 cain.plot.4=cain.plot.3+
@@ -1028,7 +1041,7 @@ stdr.plot=ggplot(stdr.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("STDR")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -1049,7 +1062,7 @@ stbr.plot=ggplot(stbr.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("STBR")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -1070,7 +1083,7 @@ stto.plot=ggplot(stto.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75, show.legend = FALSE)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black","red","black","red","black","black","black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("STTO")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -1092,7 +1105,7 @@ stdi.plot=ggplot(stdi.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75, show.legend = FALSE)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black","red","black","red","black","black","black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("STDI")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -1112,7 +1125,7 @@ stpo.plot=ggplot(stpo.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("STPO")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -1132,7 +1145,7 @@ stin.plot=ggplot(stin.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("STIN")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -1153,7 +1166,7 @@ stgl.plot=ggplot(stgl.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   geom_errorbar(aes(ymin=ymin, ymax=ymax),width=0.75, show.legend = FALSE)+
   ylim(0.0,1.0)+
   scale_color_manual(values=c("black","red","black","red","black","black","black"))+
-  theme_classic()+
+  theme_classic(base_size = 15)+
   labs(x="Rainfall Onset Date",y="Germination Fraction", color="Population")+
   ggtitle("STGL")+
   theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
@@ -1166,7 +1179,7 @@ stgl.plot.2=stgl.plot+
 
 
 plot_grid(stdr.plot.2,stbr.plot.2,stto.plot.2,stdi.plot.2,stpo.plot.2,caam.plot,stin.plot.2,
-          stgl.plot.2,caan.plot,caco.plot,cain.plot.2,
+          stgl.plot.2,caan.plot.2,caco.plot,cain.plot.4,
           nrow=3, ncol=4)
 
 #ggsave("Germination.Timing/Plots/stdr.plot.pdf", height = 10, width = 12)
@@ -1643,7 +1656,7 @@ plot_grid(stdr.plot.2,stbr.plot.2,stto.plot.2,stdi.plot.2,stpo.plot.2,caam.plot.
 # make individual effects plots if need be
 # https://cran.r-project.org/web/packages/jtools/vignettes/effect_plot.html
 
-#### Figure 6:  Germination Fraction as a function of cohort and temperature ####
+#### Figure 4:  Germination Fraction as a function of cohort and temperature ####
 
 global.germ.proport.temp.block=read.csv("Formatted.Data/global.germ.proportion.block.tempdiff.csv")
 global.germ.proport.temp.block$Pop=as.factor(global.germ.proport.temp.block$Pop)
@@ -1694,7 +1707,7 @@ proportpred = expand_grid(mean.temp =  Temp, Pop = Pops) %>%
 global.germ.proport.temp.block$proportion=global.germ.proport.temp.block$count/global.germ.proport.temp.block$sample
 
 germproport_bin = ggplot(global.germ.proport.temp.block, aes(x = mean.temp, y = proportion, shape = altpop, group = altpop, linetype = altpop)) + 
-  geom_point(show.legend = FALSE) + 
+  geom_point() + 
   theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
   labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population") +
   facet_wrap(.~ phy_order)
@@ -1711,6 +1724,190 @@ germproport_wpred
 
 #ggsave("Germination.Timing/Plots/Germproport_meantemp_panelbyspecies.test.2.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/Germproport_meantemp_panelbyspecies.png", height = 10, width = 12)
+
+# Making each plot individually
+# CAAM
+caam.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="CAAM")
+
+caam.plot = ggplot(caam.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("CAAM")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+caam.plot
+
+# CAAN
+caan.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="CAAN")
+
+caan.plot = ggplot(caan.germ.proport.temp.block, aes(x = mean.temp, y = proportion, shape = altpop, group = altpop, linetype = altpop)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("CAAN")+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  theme(plot.title = element_text(hjust = 0.5), legend.position = c(0.85,0.9))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+caan.plot
+
+# CACO
+caco.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="CACO")
+
+caco.plot = ggplot(caco.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("CACO")+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+caco.plot
+
+# STDR
+stdr.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="STDR")
+stdr.proportpred.2 = subset(proportpred.2, proportpred.2$Species =="STDR")
+
+stdr.plot = ggplot(stdr.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("STDR")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+stdr.plot
+
+stdr.plot.2 = stdr.plot + geom_line(data = stdr.proportpred.2,aes(x= mean.temp, y = proportion), size=1)
+stdr.plot.2
+
+# STBR
+stbr.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="STBR")
+stbr.proportpred.2 = subset(proportpred.2, proportpred.2$Species =="STBR")
+
+stbr.plot = ggplot(stbr.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("STBR")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+stbr.plot
+
+stbr.plot.2 = stbr.plot + geom_line(data = stbr.proportpred.2,aes(x= mean.temp, y = proportion), size=1)
+stbr.plot.2
+
+# STTO
+stto.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="STTO")
+stto.proportpred.2 = subset(proportpred.2, proportpred.2$Species =="STTO")
+
+stto.plot = ggplot(stto.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("STTO")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+stto.plot
+
+stto.plot.2 = stto.plot + geom_line(data = stto.proportpred.2,aes(x= mean.temp, y = proportion), size=1)
+stto.plot.2
+
+# STDI
+stdi.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="STDI")
+stdi.proportpred.2 = subset(proportpred.2, proportpred.2$Species =="STDI")
+
+stdi.plot = ggplot(stdi.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("STDI")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+stdi.plot
+
+stdi.plot.2 = stdi.plot + geom_line(data = stdi.proportpred.2,aes(x= mean.temp, y = proportion), size=1)
+stdi.plot.2
+
+# STPO
+stpo.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="STPO")
+stpo.proportpred.2 = subset(proportpred.2, proportpred.2$Species =="STPO")
+
+stpo.plot = ggplot(stpo.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("STPO")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+stpo.plot
+
+stpo.plot.2 = stpo.plot + geom_line(data = stpo.proportpred.2,aes(x= mean.temp, y = proportion), size=1)
+stpo.plot.2
+
+# STIN
+stin.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="STIN")
+stin.proportpred.2 = subset(proportpred.2, proportpred.2$Species =="STIN")
+
+stin.plot = ggplot(stin.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("STIN")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+stin.plot
+
+stin.plot.2 = stin.plot + geom_line(data = stin.proportpred.2,aes(x= mean.temp, y = proportion), size=1)
+stin.plot.2
+
+# STGL
+stgl.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="STGL")
+stgl.proportpred.2 = subset(proportpred.2, proportpred.2$Species =="STGL")
+
+stgl.plot = ggplot(stgl.germ.proport.temp.block, aes(x = mean.temp, y = proportion)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("STGL")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+stgl.plot
+
+stgl.plot.2 = stgl.plot + geom_line(data = stgl.proportpred.2,aes(x= mean.temp, y = proportion), size=1)
+stgl.plot.2
+
+# CAIN
+cain.germ.proport.temp.block=subset(global.germ.proport.temp.block, global.germ.proport.temp.block$Species=="CAIN")
+cain.proportpred.2 = subset(proportpred.2, proportpred.2$Species =="CAIN")
+
+cain.plot = ggplot(cain.germ.proport.temp.block, aes(x = mean.temp, y = proportion, shape = altpop, group = altpop, linetype = altpop)) + 
+  geom_point() + 
+  ylim(0.0,1.0) +
+  theme_classic(base_size=15) + scale_shape_manual(values = c(16,1))  + #scale_color_manual(values = c("black", "gray")) +
+  ggtitle("CAIN")+
+  scale_x_continuous(breaks = c(8,12,16,20))+
+  theme(plot.title = element_text(hjust = 0.5), legend.position = c(0.85,0.9))+
+  labs(x = "Mean Temperature (°C)", y= "Germination Fraction", linetype = "Population", shape = "Population")
+cain.plot
+
+cain.plot.2 = cain.plot + geom_line(data = cain.proportpred.2,aes(x= mean.temp, y = proportion, group = altpop, 
+                                                                  linetype = altpop), size=1, show.legend = FALSE)
+cain.plot.2
+
+
+plot_grid(stdr.plot.2,stbr.plot.2,stto.plot.2,stdi.plot.2,stpo.plot.2,caam.plot,stin.plot.2,
+          stgl.plot.2,caan.plot,caco.plot,cain.plot.2,
+          nrow=3, ncol=4)
+
+
 
 # get proportion for each block for re-watering in year 2
 
@@ -1769,6 +1966,9 @@ global.germ.proport.block.R2.3 = global.germ.proport.block.R2.2 %>%
 
 germproport_wpred + geom_point(data = global.germ.proport.block.R2.3,aes(x= mean.temp.2, y = proportion, shape = altpop, 
                                                                          group = altpop), color = "red",show.legend = FALSE)
+
+
+
 
 
 #### Figure NA: Germination rate as a function of cohort and temperature ####
