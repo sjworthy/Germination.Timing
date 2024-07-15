@@ -320,6 +320,7 @@ year1.temp = ggplot(ibutton.mean.2, aes(x=Date.Time, y=mean.temp)) +
   ylab("Mean Daily Temperature (°C)")+
   ylim(0,35)+
   theme_classic(base_size = 15)+
+  theme(legend.position = c(0.85,0.9))+
   scale_colour_manual(name="Years",values=cols)
 year1.temp
 
@@ -411,7 +412,7 @@ cols=c("#5495CF","#847CA3", "#E45A5A", "#F4A65E", "#80792B", "#F2D56F", "#359F8B
 #can panel by cohorts
 # using geom_density_ridges2 to draw the complete line for each cohort
 fig3a=ggplot(germ.pheno.all.rounds, aes(x = mean.Temp, y = as.factor(Cohort), group = as.factor(Cohort), fill = as.factor(Cohort))) + 
-  ylab("Rainfall Onset Date")  + xlab("Mean temperature (°C) during germination") +
+  ylab("Rainfall Onset Date")  + xlab("Frequency of mean temperatures (°C)\nduring germination") +
   geom_density_ridges2(aes(y = reorder(as.factor(Cohort), desc(as.factor(Cohort)))), show.legend = FALSE)+
   scale_y_discrete(breaks=c("1","2","3","4","5","6","7","8"),labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec","15-Sept \n (Year Two)"))+
   theme_classic(base_size = 15)+
@@ -421,7 +422,7 @@ fig3a
 #ggsave("Germination.Timing/Plots/temps.experienced.cohort.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/temps.experienced.cohort.png", height = 10, width = 12)
 
-FigureS2=plot_grid(year1.temp.nolegend,fig3a, labels = c("A","B"))
+FigureS2=plot_grid(year1.temp,fig3a, labels = c("(a)","(b)"))
 
 #ggsave("Germination.Timing/Plots/FigureS2.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/FigureS2.png", height = 10, width = 12)
