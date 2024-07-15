@@ -1049,9 +1049,9 @@ stdr.plot=ggplot(stdr.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stdr.plot.2=stdr.plot+
-  geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)+
-  geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
-  geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+  geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)
+  #geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  #geom_line(data=stdr.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 
 # STBR
@@ -1070,9 +1070,9 @@ stbr.plot=ggplot(stbr.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stbr.plot.2=stbr.plot+
-  geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)+
-  geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
-  geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+  geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=proportion, group=altpop, linetype=altpop), show.legend = FALSE)
+  #geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+  #geom_line(data=stbr.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # STTO
 stto.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STTO")
@@ -1091,9 +1091,9 @@ stto.plot=ggplot(stto.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stto.plot.2=stto.plot+
-  geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
-  geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
-  geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+  geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  #geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  #geom_line(data=stto.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 
 # STDI
@@ -1113,9 +1113,9 @@ stdi.plot=ggplot(stdi.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stdi.plot.2=stdi.plot+
-  geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
-  geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
-  geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+  geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  #geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  #geom_line(data=stdi.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # STPO
 stpo.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STPO")
@@ -1133,9 +1133,9 @@ stpo.plot=ggplot(stpo.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stpo.plot.2=stpo.plot+
-  geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
-  geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
-  geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+  geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  #geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  #geom_line(data=stpo.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # STIN
 stin.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STIN")
@@ -1153,9 +1153,9 @@ stin.plot=ggplot(stin.all.proport.factor.predict, aes(x=cohort.factor, y=y))+
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stin.plot.2=stin.plot+
-  geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
-  geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
-  geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+  geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  #geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  #geom_line(data=stin.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 # STGL
 stgl.all.proport.factor.predict=subset(all.proport.factor.predict, all.proport.factor.predict$Pop=="STGL")
@@ -1174,9 +1174,9 @@ stgl.plot=ggplot(stgl.all.proport.factor.predict, aes(x=cohort.factor, y=y,color
   scale_x_discrete(breaks = c(1,2,3,4,5,6,7), labels = c("17-Sept","2-Oct","16-Oct","30-Oct","13-Nov","27-Nov","11-Dec"))
 
 stgl.plot.2=stgl.plot+
-  geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)+
-  geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
-  geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
+  geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=proportion, color="black"), show.legend = FALSE)
+  #geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=upper, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)+
+  #geom_line(data=stgl.all.contain.cohort, aes(x=Cohort,y=lower, group=altpop, linetype=altpop), color = "gray74",show.legend = FALSE)
 
 
 plot_grid(stdr.plot.2,stbr.plot.2,stto.plot.2,stdi.plot.2,stpo.plot.2,caam.plot,stin.plot.2,
