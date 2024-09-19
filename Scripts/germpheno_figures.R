@@ -266,6 +266,9 @@ Fig2
 #ggsave("Germination.Timing/Plots/cohort.timing.and.temps.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/cohort.timing.and.temps.png", height = 10, width = 12)
 
+ggsave("Plots/Figure2a.tiff", width = 15, height = 15, units = c("cm"), device = "tiff", dpi=600)
+
+
 # adding year 2 ibutton data to plot
 
 ibutton.y2 = read.csv("Formatted.Data/ibutton_round_2.csv")
@@ -422,6 +425,9 @@ fig3a
 #ggsave("Germination.Timing/Plots/temps.experienced.cohort.pdf", height = 10, width = 12)
 #ggsave("Germination.Timing/Plots/temps.experienced.cohort.png", height = 10, width = 12)
 
+ggsave("Plots/Figure2b.tiff", width = 15, height = 15, units = c("cm"), device = "tiff", dpi=600)
+
+
 FigureS2=plot_grid(year1.temp,fig3a, labels = c("(a)","(b)"))
 
 #ggsave("Germination.Timing/Plots/FigureS2.pdf", height = 10, width = 12)
@@ -497,6 +503,8 @@ fig3b=ggplot(cohort.proportion.data.2, aes(fill=Year, y=Germination.Proportion, 
 fig3b
 
 #ggsave("Germination.Timing/Plots/fig3b_legend.pdf", height = 8, width = 12)
+ggsave("Plots/Figure2b.tiff", width = 17, height = 15, units = c("cm"), device = "tiff", dpi=600)
+
 
 #Fig3_draft = plot_grid(fig3a,fig3b, labels = c("A.", "B."), rel_widths = c(0.9, 1),ncol = 2)
 #fig3_draft
